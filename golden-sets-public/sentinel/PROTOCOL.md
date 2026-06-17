@@ -1,46 +1,41 @@
-# Planted-pages protocol (freshness primitives)
+# Sentinel protocol — truth by construction (index-freshness instrument)
 
-Referenced by Stage 3a of the playbook. Planted pages are assets **we deploy and
-control** so the lag clock has an authoritative T0. This protocol exists so that
-"how fresh is vendor X" is measured against a timestamp no vendor can dispute.
+Ported from arlenk2021/GoldenEvalsWebSearch (`sentinel/publish.py`).
 
-> **Deploy planted assets before anything else in Stage 3. The lag clock starts at
-> deploy** — any delay between generation and the rest of the stage is lost signal.
+A **sentinel** is a page the benchmark itself publishes, so its content, golden
+URL, and publish time are known with certainty **before the world has ever seen
+it**. Sentinels are the `sentinel` stratum (`GroundTruthTier.SENTINEL_PLANTED`,
+D-09). They exist to do one thing the public web cannot: split a search
+`not_found` miss into its two real causes — *not indexed yet* vs *ranked below k*.
 
-## The 24-cell matrix
+## Why it is a prerequisite for a public search board
 
-Plant one asset in every cell so lag is comparable across conditions:
+Without a page the bench owns, a search miss is ambiguous: did the vendor fail to
+rank a page it has indexed, or has it simply not crawled it yet (freshness lag)?
+Conflating the two misreports freshness as accuracy. Because a sentinel carries a
+globally-unique truth token, one extra "indexing probe" with the `token_in_query`
+variant settles it:
 
-| Axis | Cells |
-|---|---|
-| Content type | listing · article · careers-page delta · price change (4) |
-| Region | us · eu · apac (3) |
-| Discoverability | linked-from-sitemap · orphan (2) |
+- the unique-token query surfaces the canonical URL → **ranked_below_k** (indexed; the descriptive query just didn't rank it in top-k)
+- even the unique-token query cannot surface it → **not_indexed** (true index lag)
 
-4 × 3 × 2 = 24 cells. Each cell gets ≥1 planted asset per snapshot window.
+## Minting protocol
 
-## Per-asset record (authoritative T0)
+1. **Mint a cohort** (default 5 pages per nightly run). Each page gets a fresh
+   random truth token `SENT-<16 hex>` and a canonical `<link rel="canonical">`.
+2. **Vary the URL shape** per page (`notes/{slug}`, `ref/{slug}`, `docs/a/{slug}`,
+   `k/{slug}/index`, …) so vendors cannot fingerprint a single "bench-owned" URL
+   pattern and special-case it.
+3. **The publish timestamp is authoritative**: the git commit time of the page
+   file (recorded by the publishing CI job) is T0 for the lag clock. Deploy the
+   sentinel cohort **before** anything else in a measurement run — any delay
+   between minting and publish is lost freshness signal.
+4. Emit a matching `Candidate` row (stratum `sentinel`) into the candidate stream;
+   it flows through the same verify → split pipeline as registry rows.
 
-Every planted asset logs, at deploy time, to `golden/planted_pages/<primitive>/manifest.jsonl`:
+## Trust notes
 
-```json
-{"asset_id": "pp-us-listing-linked-0007",
- "cell": {"content_type": "listing", "region": "us", "discoverable": true},
- "url": "https://golden.wrodium.example/pp/0007",
- "t0_deployed_at": "2026-06-10T00:00:00Z",   // the lag clock origin — never backfilled
- "expected_fields": {"title": "...", "price": 0.0},
- "page_hash": "…", "split": "public|holdout"}
-```
-
-Lag for a vendor = `first_observed_at - t0_deployed_at`, where `first_observed_at`
-is the earliest call in which the vendor returns the planted content correctly.
-`no_coverage` (never observed within the window) renders `-`, per the metric's
-dash_semantics — it is not a lag of zero or infinity.
-
-## Rules
-
-- T0 is stamped by the deploy job, server-side. Never edit it afterward.
-- Orphan assets must be genuinely unlinked (no sitemap, no inbound link) — they
-  measure crawl breadth, not sitemap-following.
-- Rotate 25% of planted cells each quarter (the rotation plan in the primitive YAML).
-- **Lag crawlers never pause.** Gaps in a lag curve are permanent and publicly visible.
+- The sentinel base URL and the salt are configured via env (`SENTINEL_BASE_URL`,
+  `HMAC_SALT`); the salt is never published.
+- Sentinels measure index freshness, not an intent slice — they carry no intent
+  slice tag.

@@ -1,9 +1,8 @@
 """extraction Task + Scorer (web_extraction vertical).
 
-Ported from arlenk2021/GoldenEvalsWebSearch (extract probe) + arlenk2021/
-AgentsBenchmark (web_extraction primitive). The Scorer wraps the token-survival
-model in `scoring.py`; the Task yields golden rows (canonical URL + truth_token)
-and tags them with the extraction slices from slices.yaml.
+Ported from arlenk2021/GoldenEvalsWebSearch (extract probe). The Scorer wraps the
+token-survival model in `scoring.py`; the Task yields golden rows (canonical URL +
+truth_token) and tags them with the extraction slices from slices.yaml.
 """
 
 from __future__ import annotations

@@ -26,9 +26,8 @@ that reported only the 33% number would slander Exa's extractor; the miss
 breakdown is what makes the actual capability gap (bot evasion) legible.
 
 This is why `ScorerOutput.miss_reason` carries `blocked` / `truncated` /
-`token_absent` / `empty`, and why `blocked` is a first-class terminal state
-(`states.py`) that is NOT charged as a genuine miss against the accuracy
-denominator.
+`token_absent` / `empty`, and why a `blocked` miss is surfaced separately rather
+than charged as a genuine extraction failure against the accuracy denominator.
 
 ## Modules
 
@@ -37,10 +36,6 @@ denominator.
   blocked / truncated / token_absent / empty. Depth-conditional survival
   (`token_locate`) separates title-zone tokens (CVE IDs at offset ~0, survive any
   truncation) from deep-body tokens (FR doc numbers, die under truncation).
-- `states.py` — the equivalence-state scoring model (ported from AgentsBenchmark
-  `wrodium/scoring/states.py` + `metrics.py`): `ResultState`
-  (correct/incorrect/no_coverage/blocked/timeout/fetch_failed) plus per-vendor
-  state aggregation with a first-class `blocked_rate`.
 - `probe.py` — the extract probe runner (from `extract/main.py`), adapted to call
   the bench_adapters extraction adapters (`firecrawl`, `jina`, `exa_live`,
   `tavily_extract`, `apify`) and emit `bench_schemas.ItemResult`. Re-applies the
@@ -51,13 +46,14 @@ denominator.
   blocked/truncated/token_absent miss breakdown.
 - `task.py` — `Task` / `Scorer` (subclass `bench_core`), `primitive =
   Primitive.EXTRACTION`.
-- `slices.yaml` — extraction slices: difficulty strata (`static_html`,
-  `js_rendered`, `ambiguous_layout`, `paginated_or_lazy`), authoritative-source
-  slices (`fed_register` is THE anti-bot slice), and token-depth slices.
+- `slices.yaml` — extraction slices: the GoldenEvals intent vocabulary
+  (`government_registry` is THE anti-bot slice, plus `company_lookup`,
+  `technical_docs`, `citation_needed`, …), the `Stratum` set, and token-depth
+  slices. web_extraction and web_search share one slice vocabulary.
 
 ## Provenance
 
-Ported from arlenk2021/GoldenEvalsWebSearch (Apache-2.0 code, CC-BY-4.0 data;
-the extract probe and token-survival report) and arlenk2021/AgentsBenchmark (the
-web_extraction primitive + equivalence-state scoring model). Relicensed to MIT
-within benchpublic by the author.
+Ported from arlenk2021/GoldenEvalsWebSearch (Apache-2.0 code, CC-BY-4.0 data; the
+extract probe and token-survival report). Relicensed to MIT within benchpublic by
+the author. The intended companion source repo `arlenk2021/FindingsWebExtract` is
+currently empty — nothing was pulled from it (see workspace TODO).

@@ -36,6 +36,7 @@ alternates. `bench-schemas` is FROZEN — import types from it, never modify it.
 
 ## golden-sets-public (owned by Lane GOLDEN)
 
-Provenance: ported from arlenk2021/GoldenEvalsWebSearch (Apache-2.0 code, CC-BY-4.0 data)
-and arlenk2021/AgentsBenchmark. Relicensed to MIT within benchpublic by the author; keep a
-one-line provenance note in each package README.
+Provenance: ported from arlenk2021/GoldenEvalsWebSearch (Apache-2.0 code, CC-BY-4.0 data).
+The companion repo arlenk2021/FindingsWebExtract is currently empty (nothing pulled).
+Relicensed to MIT within benchpublic by the author; keep a one-line provenance note in
+each package README.

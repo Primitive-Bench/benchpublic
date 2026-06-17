@@ -24,7 +24,7 @@ Miss decomposition is the methodology highlight. A miss is one of:
                     token_locate). FR doc numbers live deep in the body and die
                     under truncation, while CVE IDs live at offset ~0 and survive.
   * token_absent  — real content was extracted, the token simply is not in it.
-  * empty         — the vendor returned nothing usable (-> no_coverage upstream).
+  * empty         — the vendor returned nothing usable.
 """
 from __future__ import annotations
 
@@ -32,8 +32,6 @@ import re
 from typing import Any, Optional
 
 from bench_schemas import ScorerOutput
-
-from eval_extraction.states import ResultState, state_for
 
 _WS = re.compile(r"\s+")
 
@@ -125,34 +123,27 @@ def score_extraction(
       * miss_reason    — the decomposed failure category (None on a hit)
       * metrics        — token_offset / chars / norm_chars for depth-conditional
                          analysis (the title-zone vs deep-body confound)
-      * equivalence_class — the projected ResultState (correct/incorrect/blocked/…)
-                            so the equivalence-state report can be derived without
-                            re-running the scorer.
     """
     token = str(item["truth_token"])
     token_depth = int(item.get("token_depth", -1))
 
     if error:
-        # Transport failure: nothing scoreable. Not charged a token miss; the
-        # equivalence-state layer renders this as fetch_failed.
+        # Transport failure: nothing scoreable. Not charged a token miss.
         return ScorerOutput(
             correct=None,
             score=None,
             miss_reason="fetch_failed",
-            equivalence_class=ResultState.FETCH_FAILED.value,
             rationale=str(error)[:200],
         )
 
     offset, norm_len = token_locate(token, main_text)
     hit = offset >= 0
     miss_reason = None if hit else classify_miss(token, main_text, token_depth=token_depth)
-    state = state_for(hit, miss_reason)
 
     return ScorerOutput(
         correct=hit,
         score=1.0 if hit else 0.0,
         miss_reason=miss_reason,
-        equivalence_class=state.value,
         metrics={
             "token_offset": float(offset),   # -1 absent; ~0 = title/snippet zone
             "chars": float(len(main_text or "")),
