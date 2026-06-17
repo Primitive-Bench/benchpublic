@@ -35,7 +35,7 @@ it and writes **only** files it owns — no shared mutable state. That boundary 
 what lets the build lanes run in parallel without colliding. See
 [`apps/docs/DECISIONS.md`](apps/docs/DECISIONS.md) (D-03).
 
-## Quickstart (once packages land)
+## Quickstart (once packages are published)
 
 ```bash
 uv sync
