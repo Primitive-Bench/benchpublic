@@ -89,4 +89,4 @@ from bench_schemas.models import GroundTruthTier
 ## Provenance
 
 Ported from arlenk2021/GoldenEvalsWebSearch (Apache-2.0 code, CC-BY-4.0 data).
-Relicensed to MIT within primitive-bench by the author.
+Redistributed under Apache-2.0 within primitive-bench by the author.

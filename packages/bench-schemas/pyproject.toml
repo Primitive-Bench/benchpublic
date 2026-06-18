@@ -3,7 +3,7 @@ name = "bench-schemas"
 version = "0.1.0"
 description = "The frozen result/manifest/slice contract for Primitive Bench. THE GATE."
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
 dependencies = ["pydantic>=2.6"]
 
 [build-system]

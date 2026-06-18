@@ -3,7 +3,7 @@ name = "eval-chunking"
 version = "0.1.0"
 description = "Primitive Bench eval vertical: Chunking/parsing — downstream-task-grounded quality slices"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
 dependencies = ["bench-schemas", "bench-core", "bench-stats", "bench-adapters"]
 
 [build-system]

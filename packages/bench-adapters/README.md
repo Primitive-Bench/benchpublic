@@ -25,8 +25,8 @@ the bare name.
 
 Ported from [arlenk2021/GoldenEvalsWebSearch](https://github.com/arlenk2021/GoldenEvalsWebSearch)
 (`src/probe/vendors/{base,adapters}.py` for search; `src/probe/extract/adapters.py`
-for extraction). Originally Apache-2.0 code / CC-BY-4.0 data; relicensed to MIT
-within primitive-bench by the author. Vendor request/response parsing logic and
+for extraction). Originally Apache-2.0 code / CC-BY-4.0 data; redistributed under
+Apache-2.0 within primitive-bench by the author. Vendor request/response parsing logic and
 comments are preserved; the async `search(query, k)` / `extract(url)` methods are
 adapted to the synchronous bench-adapters `Adapter.invoke(item)` contract.
 

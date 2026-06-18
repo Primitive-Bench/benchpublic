@@ -3,7 +3,7 @@ name = "bench-core"
 version = "0.1.0"
 description = "Harness engine for Primitive Bench"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
 dependencies = [
     "bench-schemas",
     "httpx[http2]>=0.27",        # async HTTP client (registry pump + liveness fetch)

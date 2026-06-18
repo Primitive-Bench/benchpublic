@@ -3,7 +3,7 @@ name = "eval-ocr"
 version = "0.1.0"
 description = "Primitive Bench eval vertical: OCR — six-model adapters, three-loop change-detection, per-doc-type slices"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
 dependencies = ["bench-schemas", "bench-core", "bench-stats", "bench-adapters"]
 
 [build-system]

@@ -1,6 +1,6 @@
 # primitive-bench
 
-> Vendor-neutral, MIT-licensed, reproducible eval harness for **AI infrastructure
+> Vendor-neutral, Apache-2.0-licensed, reproducible eval harness for **AI infrastructure
 > primitives** — OCR, web search, vector DBs, rerankers, retrieval, extraction,
 > chunking, crawling, memory.
 
@@ -45,6 +45,8 @@ uv run bench view ./runs/<run_id>
 
 ## License
 
-MIT. Reuse freely. We learn from EleutherAI lm-evaluation-harness, UK AISI
+Apache-2.0. Reuse freely. We learn from EleutherAI lm-evaluation-harness, UK AISI
 Inspect, Stanford HELM, ann-benchmarks, VectorDBBench, and OmniDocBench — all
 MIT/Apache-2.0. We do **not** vendor GPL/commercial-dual code (e.g. marker core).
+Public datasets under `golden-sets-public/` are licensed separately under
+CC-BY-4.0. See [`NOTICE`](NOTICE) for third-party attribution.

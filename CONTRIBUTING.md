@@ -1,6 +1,6 @@
 # Contributing to Primitive Bench (`primitive-bench`)
 
-Welcome. `primitive-bench` is the public, MIT-licensed, reproducible eval harness for
+Welcome. `primitive-bench` is the public, Apache-2.0-licensed, reproducible eval harness for
 AI **infrastructure primitives** — OCR, web search, vector DBs, rerankers,
 retrieval, extraction, chunking, crawling, memory. This guide gets a new
 contributor from zero to a merged PR.
@@ -121,7 +121,7 @@ deterministic (bootstrap takes a required `seed`). Don't break existing signatur
   `sentinel_planted`. Tag every row.
 - Don't fabricate large datasets. Small, honest, human-verifiable samples + clear
   schema docs beat synthetic bulk.
-- Published data is **CC-BY-4.0** (`golden-sets-public/LICENSE-DATA`); code is MIT.
+- Published data is **CC-BY-4.0** (`golden-sets-public/LICENSE-DATA`); code is Apache-2.0.
 
 ---
 
@@ -138,14 +138,15 @@ deterministic (bootstrap takes a required `seed`). Don't break existing signatur
 - **Determinism (D-14):** `PYTHONHASHSEED=0`, per-run master seed in the manifest,
   pinned dataset/task versions.
 - **License hygiene (D-16):** never vendor GPL/commercial-dual code (e.g. marker
-  core) into this MIT repo. Benchmark it, don't embed it.
+  core) into this Apache-2.0 repo. Benchmark it, don't embed it.
 
 ---
 
 ## 7. License & provenance
 
-- By contributing you agree your contribution is licensed under the repo's **MIT**
-  license (data under CC-BY-4.0).
+- By contributing you agree your contribution is licensed under the repo's
+  **Apache-2.0** license (data under CC-BY-4.0). This is the standard inbound=outbound
+  rule (Apache-2.0 §5); no separate CLA is required.
 - If you port code/data from elsewhere, keep a one-line **provenance note** in the
   package README and confirm the source license is compatible (MIT/Apache-2.0/CC-BY).
 

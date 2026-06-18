@@ -3,7 +3,7 @@ name = "bench-stats"
 version = "0.1.0"
 description = "Statistics library for Primitive Bench (McNemar, Wilson, bootstrap, IR metrics)"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
 dependencies = ["bench-schemas", "scipy", "statsmodels"]
 
 [build-system]
