@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/primitive-bench-logo.png" alt="Primitive Bench" width="140">
+  <img src="docs/assets/primitive-bench-logo.svg" alt="Primitive Bench" width="110">
 </p>
 
 <h1 align="center">Primitive Bench</h1>
