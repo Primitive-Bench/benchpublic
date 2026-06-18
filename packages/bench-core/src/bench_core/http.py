@@ -9,6 +9,7 @@ The truth token must appear in MAIN CONTENT, not site-wide boilerplate
 caller matches, so a date or id living only in a footer does not count as a
 verified hit.
 """
+
 from __future__ import annotations
 
 import asyncio

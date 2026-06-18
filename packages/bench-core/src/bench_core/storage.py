@@ -3,6 +3,7 @@
 Working artifacts are JSONL (append-only, git-friendly audit trail); frozen
 snapshots are Parquet. DuckDB is the working query layer over both.
 """
+
 from __future__ import annotations
 
 import json
@@ -59,5 +60,8 @@ PROMOTIONS_FILE = DATA / "promotions.jsonl"
 def log_adjudication(row_id: str, action: str, detail: dict, *, ts: str = "") -> None:
     """Public adjudication log: every edge-case ruling (e.g. an auto-promoted
     mirror) is recorded once and applied uniformly."""
-    write_jsonl(ADJUDICATION_FILE, [{"row_id": row_id, "action": action,
-                                     "detail": detail, "ts": ts}], append=True)
+    write_jsonl(
+        ADJUDICATION_FILE,
+        [{"row_id": row_id, "action": action, "detail": detail, "ts": ts}],
+        append=True,
+    )

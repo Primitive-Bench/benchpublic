@@ -30,9 +30,7 @@ class Scorer(_Scorer):
     """
 
     def score(self, item: dict[str, Any], raw: dict[str, Any]) -> ScorerOutput:
-        main_text = str(
-            raw.get("main_text") or raw.get("content") or raw.get("raw_output") or ""
-        )
+        main_text = str(raw.get("main_text") or raw.get("content") or raw.get("raw_output") or "")
         return score_extraction(item, main_text, error=raw.get("error"))
 
 

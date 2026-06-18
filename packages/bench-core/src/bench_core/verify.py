@@ -16,6 +16,7 @@ Every rejection is logged with a reason. Nothing is silently dropped.
 record carrying whether the candidate is currently live (truth-token present in
 main content on an authoritative fetch) and the equivalence-class payload.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -47,16 +48,16 @@ VERIFICATIONS_FILE = REJECTIONS.parent / "verifications.jsonl"  # passing-fetch 
 
 # Canonical slice vocabulary (maps the Stage-2 product list).
 SLICES = (
-    "government_registry",   # gov/registry pages
-    "company_lookup",        # startup/company lookup
-    "technical_docs",        # technical documentation / specs
-    "docs_lookup",           # general docs lookup
-    "fresh_news",            # time-sensitive news/events
-    "b2b_tools",             # obscure B2B tools / vendors
-    "local_regional",        # local / regional sources
-    "pricing_pages",         # pricing / plans pages
-    "long_tail",             # rare, low-traffic queries
-    "citation_needed",       # claims needing an authoritative citation
+    "government_registry",  # gov/registry pages
+    "company_lookup",  # startup/company lookup
+    "technical_docs",  # technical documentation / specs
+    "docs_lookup",  # general docs lookup
+    "fresh_news",  # time-sensitive news/events
+    "b2b_tools",  # obscure B2B tools / vendors
+    "local_regional",  # local / regional sources
+    "pricing_pages",  # pricing / plans pages
+    "long_tail",  # rare, low-traffic queries
+    "citation_needed",  # claims needing an authoritative citation
 )
 
 # Per-source default slices. The current registries are all authoritative
@@ -87,10 +88,15 @@ _LONG_TAIL_MAXLEN = 60
 def assign_slices(row: dict) -> list[str]:
     """Deterministic slice tags for a row. Union of source defaults + content rules."""
     tags: set[str] = set(SOURCE_SLICES.get(row.get("source", ""), ()))
-    text = " ".join(filter(None, [
-        row.get("query", ""),
-        *(row.get("query_variants", {}) or {}).values(),
-    ]))
+    text = " ".join(
+        filter(
+            None,
+            [
+                row.get("query", ""),
+                *(row.get("query_variants", {}) or {}).values(),
+            ],
+        )
+    )
     for slice_name, pattern in _CONTENT_RULES:
         if pattern.search(text):
             tags.add(slice_name)
@@ -184,10 +190,16 @@ async def liveness_gate(cand: dict) -> Liveness:
     # eval stratify by where the token sits — title-zone vs deep-body — so a
     # snippet-only extractor cannot look good on title-token sources.
     depth = res.main_text.find(token)
-    return Liveness(True, "ok", {
-        "canonical": eq.canonical, "members": eq.members,
-        "token_depth": depth, "canonical_chars": len(res.main_text),
-    })
+    return Liveness(
+        True,
+        "ok",
+        {
+            "canonical": eq.canonical,
+            "members": eq.members,
+            "token_depth": depth,
+            "canonical_chars": len(res.main_text),
+        },
+    )
 
 
 async def _verify_one(cand: dict) -> tuple[bool, str, dict | None]:
@@ -240,9 +252,12 @@ async def run(single_pass: bool = False, limit: int | None = None) -> int:
         if not single_pass:
             if len(times) < 2:
                 continue
-            gap = abs(
-                datetime.fromisoformat(times[-1]) - datetime.fromisoformat(times[0])
-            ).total_seconds() / 3600.0
+            gap = (
+                abs(
+                    datetime.fromisoformat(times[-1]) - datetime.fromisoformat(times[0])
+                ).total_seconds()
+                / 3600.0
+            )
             if gap < s.verify_min_gap_hours:
                 continue
 

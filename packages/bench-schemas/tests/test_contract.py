@@ -35,8 +35,15 @@ def test_manifest_requires_seed_and_versions():
         primitive=Primitive.OCR,
         created_at=datetime(2026, 6, 16),
         seed=7,
-        adapters=[AdapterSpec(name="tesseract", primitive=Primitive.OCR,
-                              vendor="oss", version="5.3", is_sentinel=True)],
+        adapters=[
+            AdapterSpec(
+                name="tesseract",
+                primitive=Primitive.OCR,
+                vendor="oss",
+                version="5.3",
+                is_sentinel=True,
+            )
+        ],
         task_version="ocr@1",
         dataset_version="ocr-2026.06",
     )
@@ -45,6 +52,12 @@ def test_manifest_requires_seed_and_versions():
 
 
 def test_slice_result_separability_default_none():
-    s = SliceResult(run_id="run_1", primitive=Primitive.OCR, slice="doc_type:invoice",
-                    adapter="tesseract", n=120, point_estimate=0.91)
+    s = SliceResult(
+        run_id="run_1",
+        primitive=Primitive.OCR,
+        slice="doc_type:invoice",
+        adapter="tesseract",
+        n=120,
+        point_estimate=0.91,
+    )
     assert s.separable is None  # must be explicitly set by bench-stats

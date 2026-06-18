@@ -12,6 +12,7 @@ Forms (easy -> hard):
   - descriptive:    natural-language description with the identifier removed
                     (the honest discriminator)
 """
+
 from __future__ import annotations
 
 import re
@@ -48,7 +49,9 @@ def strip_token(text: str, token: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip(" :;,-")
 
 
-def build_variants(*, descriptive: str, token: str, token_phrase: str | None = None) -> dict[str, str]:
+def build_variants(
+    *, descriptive: str, token: str, token_phrase: str | None = None
+) -> dict[str, str]:
     """Build the form->query map.
 
     `descriptive` is the no-identifier ask (already token-free, or cleaned here).

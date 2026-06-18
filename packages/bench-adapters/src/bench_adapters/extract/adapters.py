@@ -14,6 +14,7 @@ expose a synchronous `invoke(item)` returning the bench-adapters result dict, an
 the harness skips them cleanly rather than scoring a miss they never had a chance
 at.
 """
+
 from __future__ import annotations
 
 import os
@@ -84,8 +85,11 @@ class Firecrawl(_ExtractAdapter):
 
     def extract(self, url: str) -> str:
         key = _need(_env("WRODIUM_FIRECRAWL_API_KEY", "FIRECRAWL_API_KEY"), self.name)
-        with httpx.Client(timeout=EXTRACT_TIMEOUT, follow_redirects=True,
-                          headers={"Authorization": f"Bearer {key}"}) as c:
+        with httpx.Client(
+            timeout=EXTRACT_TIMEOUT,
+            follow_redirects=True,
+            headers={"Authorization": f"Bearer {key}"},
+        ) as c:
             r = c.post(
                 "https://api.firecrawl.dev/v1/scrape",
                 json={"url": url, "formats": ["markdown"], "onlyMainContent": True},
@@ -102,8 +106,11 @@ class Jina(_ExtractAdapter):
     def extract(self, url: str) -> str:
         key = _need(_env("WRODIUM_JINA_API_KEY", "JINA_API_KEY"), self.name)
         # Jina Reader proxies the URL and returns cleaned markdown in the body.
-        with httpx.Client(timeout=EXTRACT_TIMEOUT, follow_redirects=True,
-                          headers={"Authorization": f"Bearer {key}"}) as c:
+        with httpx.Client(
+            timeout=EXTRACT_TIMEOUT,
+            follow_redirects=True,
+            headers={"Authorization": f"Bearer {key}"},
+        ) as c:
             r = c.get(f"https://r.jina.ai/{url}")
             r.raise_for_status()
             return r.text
@@ -120,8 +127,9 @@ class _ExaContents(_ExtractAdapter):
 
     def extract(self, url: str) -> str:
         key = _need(_env("WRODIUM_EXA_API_KEY", "EXA_API_KEY"), self.name)
-        with httpx.Client(timeout=EXTRACT_TIMEOUT, follow_redirects=True,
-                          headers={"x-api-key": key}) as c:
+        with httpx.Client(
+            timeout=EXTRACT_TIMEOUT, follow_redirects=True, headers={"x-api-key": key}
+        ) as c:
             r = c.post(
                 "https://api.exa.ai/contents",
                 json={"urls": [url], "text": True, "livecrawl": self.livecrawl},
@@ -134,13 +142,13 @@ class _ExaContents(_ExtractAdapter):
 @register("exa_live")
 class ExaLive(_ExaContents):
     name = "exa_live"
-    livecrawl = "always"        # force a live fetch
+    livecrawl = "always"  # force a live fetch
 
 
 @register("exa_cached")
 class ExaCached(_ExaContents):
     name = "exa_cached"
-    livecrawl = "never"         # pure index, no live fetch
+    livecrawl = "never"  # pure index, no live fetch
 
 
 @register("tavily_extract")
@@ -171,8 +179,7 @@ class Apify(_ExtractAdapter):
         actor = _env("WRODIUM_APIFY_ACTOR", "APIFY_ACTOR") or "apify/website-content-crawler"
         actor_path = actor.replace("/", "~")
         endpoint = (
-            f"https://api.apify.com/v2/acts/{actor_path}/run-sync-get-dataset-items"
-            f"?token={key}"
+            f"https://api.apify.com/v2/acts/{actor_path}/run-sync-get-dataset-items?token={key}"
         )
         with httpx.Client(timeout=EXTRACT_TIMEOUT, follow_redirects=True) as c:
             r = c.post(
@@ -193,8 +200,11 @@ class BrightData(_ExtractAdapter):
     def extract(self, url: str) -> str:
         key = _need(_env("WRODIUM_BRIGHTDATA_API_KEY", "BRIGHTDATA_API_KEY"), self.name)
         # Web Unlocker request API. Zone name is account-specific; default "web_unlocker".
-        with httpx.Client(timeout=EXTRACT_TIMEOUT, follow_redirects=True,
-                          headers={"Authorization": f"Bearer {key}"}) as c:
+        with httpx.Client(
+            timeout=EXTRACT_TIMEOUT,
+            follow_redirects=True,
+            headers={"Authorization": f"Bearer {key}"},
+        ) as c:
             r = c.post(
                 "https://api.brightdata.com/request",
                 json={"zone": "web_unlocker", "url": url, "format": "raw"},

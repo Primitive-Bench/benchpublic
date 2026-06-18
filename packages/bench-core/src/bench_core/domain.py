@@ -8,6 +8,7 @@ These are the rich bench-core domain types — richer than the frozen
 `bench_schemas.ItemResult` / `bench_schemas.GroundTruthTier` at output
 boundaries (see `stratum_to_tier`).
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -18,11 +19,11 @@ from bench_schemas.models import GroundTruthTier
 
 
 class Stratum(StrEnum):
-    NAVIGATIONAL = "navigational"      # verified-external truth
-    LONG_TAIL = "long_tail"            # verified-external truth
-    FRESH = "fresh"                    # authoritative-registry truth (delta pump)
-    SENTINEL = "sentinel"              # truth by construction (bench-published)
-    SOS = "sos"                        # deferred in v1 (hand-curated, no pump)
+    NAVIGATIONAL = "navigational"  # verified-external truth
+    LONG_TAIL = "long_tail"  # verified-external truth
+    FRESH = "fresh"  # authoritative-registry truth (delta pump)
+    SENTINEL = "sentinel"  # truth by construction (bench-published)
+    SOS = "sos"  # deferred in v1 (hand-curated, no pump)
 
 
 class Split(StrEnum):
@@ -68,9 +69,9 @@ class Candidate:
     query: str
     golden_url: str
     truth_token: str
-    authoritative_timestamp: str      # ISO-8601 from the source of truth
+    authoritative_timestamp: str  # ISO-8601 from the source of truth
     stratum: str
-    source: str                       # e.g. "sec_edgar", "nvd_cve"
+    source: str  # e.g. "sec_edgar", "nvd_cve"
     row_id: str = field(default="")
     # query variants by form for the web_search primitive. The default `query`
     # is the descriptive (honest-discriminator) form; token_in_query is the easy
@@ -107,11 +108,11 @@ class GoldenRow:
     stratum: str
     source: str
     split: str
-    verified_at: list[str]            # the two (or more) verification fetch timestamps
-    token_depth: int = -1             # token offset in the CANONICAL main content
-    canonical_chars: int = 0          # length of canonical main content
+    verified_at: list[str]  # the two (or more) verification fetch timestamps
+    token_depth: int = -1  # token offset in the CANONICAL main content
+    canonical_chars: int = 0  # length of canonical main content
     query_variants: dict[str, str] = field(default_factory=dict)
-    slices: list[str] = field(default_factory=list)   # cross-cutting intent tags
+    slices: list[str] = field(default_factory=list)  # cross-cutting intent tags
 
     def to_dict(self) -> dict:
         return {

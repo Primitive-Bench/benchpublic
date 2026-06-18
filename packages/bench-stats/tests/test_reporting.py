@@ -42,7 +42,7 @@ def test_required_n_grows_with_discordance():
     # higher discordance (vendors disagree more) => larger n. n=500 powers a
     # ~3.6pp gap only when discordance is LOW (<~0.08).
     gap = 0.036
-    low_disc = required_n((0.08 + gap) / 2, (0.08 - gap) / 2)   # discordance 0.08
+    low_disc = required_n((0.08 + gap) / 2, (0.08 - gap) / 2)  # discordance 0.08
     high_disc = required_n((0.40 + gap) / 2, (0.40 - gap) / 2)  # discordance 0.40
     assert low_disc < high_disc
     assert low_disc <= 500 < high_disc

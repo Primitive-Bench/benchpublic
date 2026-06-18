@@ -5,6 +5,7 @@ declared canonical may join a row's equivalence class only when it (a) resolves
 to the same registrable domain and (b) passes the truth-token check — both of
 which are enforced in bench_core.verify, not here. This module only normalizes.
 """
+
 from __future__ import annotations
 
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit

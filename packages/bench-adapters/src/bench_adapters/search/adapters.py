@@ -14,6 +14,7 @@ dict, and (3) measure latency. Adapters raise VendorUnavailable when their key i
 unset so the harness can skip them cleanly (and record the skip) rather than
 charging a vendor a miss it never had a chance at.
 """
+
 from __future__ import annotations
 
 import os
@@ -91,8 +92,9 @@ class Exa(_SearchAdapter):
 
     def search(self, query: str, k: int) -> list[str]:
         key = _need(_env("WRODIUM_EXA_API_KEY", "EXA_API_KEY"), self.name)
-        with httpx.Client(timeout=SEARCH_TIMEOUT, follow_redirects=True,
-                          headers={"x-api-key": key}) as c:
+        with httpx.Client(
+            timeout=SEARCH_TIMEOUT, follow_redirects=True, headers={"x-api-key": key}
+        ) as c:
             r = c.post(
                 "https://api.exa.ai/search",
                 json={"query": query, "numResults": k, "type": "auto"},
@@ -107,9 +109,11 @@ class Brave(_SearchAdapter):
 
     def search(self, query: str, k: int) -> list[str]:
         key = _need(_env("WRODIUM_BRAVE_API_KEY", "BRAVE_SEARCH_API_KEY"), self.name)
-        with httpx.Client(timeout=SEARCH_TIMEOUT, follow_redirects=True,
-                          headers={"X-Subscription-Token": key,
-                                   "Accept": "application/json"}) as c:
+        with httpx.Client(
+            timeout=SEARCH_TIMEOUT,
+            follow_redirects=True,
+            headers={"X-Subscription-Token": key, "Accept": "application/json"},
+        ) as c:
             r = c.get(
                 "https://api.search.brave.com/res/v1/web/search",
                 params={"q": query, "count": k},
@@ -156,8 +160,11 @@ class Bing(_SearchAdapter):
 
     def search(self, query: str, k: int) -> list[str]:
         key = _need(_env("BING_SEARCH_KEY"), self.name)
-        with httpx.Client(timeout=SEARCH_TIMEOUT, follow_redirects=True,
-                          headers={"Ocp-Apim-Subscription-Key": key}) as c:
+        with httpx.Client(
+            timeout=SEARCH_TIMEOUT,
+            follow_redirects=True,
+            headers={"Ocp-Apim-Subscription-Key": key},
+        ) as c:
             r = c.get(
                 "https://api.bing.microsoft.com/v7.0/search",
                 params={"q": query, "count": k},
@@ -188,8 +195,11 @@ class Perplexity(_SearchAdapter):
 
     def search(self, query: str, k: int) -> list[str]:
         key = _need(_env("WRODIUM_PERPLEXITY_API_KEY", "PERPLEXITY_API_KEY"), self.name)
-        with httpx.Client(timeout=SEARCH_TIMEOUT, follow_redirects=True,
-                          headers={"Authorization": f"Bearer {key}"}) as c:
+        with httpx.Client(
+            timeout=SEARCH_TIMEOUT,
+            follow_redirects=True,
+            headers={"Authorization": f"Bearer {key}"},
+        ) as c:
             r = c.post(
                 "https://api.perplexity.ai/chat/completions",
                 json={
@@ -211,8 +221,9 @@ class You(_SearchAdapter):
 
     def search(self, query: str, k: int) -> list[str]:
         key = _need(_env("YOU_API_KEY"), self.name)
-        with httpx.Client(timeout=SEARCH_TIMEOUT, follow_redirects=True,
-                          headers={"X-API-Key": key}) as c:
+        with httpx.Client(
+            timeout=SEARCH_TIMEOUT, follow_redirects=True, headers={"X-API-Key": key}
+        ) as c:
             r = c.get("https://api.ydc-index.io/search", params={"query": query})
             r.raise_for_status()
             hits = r.json().get("hits", [])

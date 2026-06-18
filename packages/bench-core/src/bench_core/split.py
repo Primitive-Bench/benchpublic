@@ -6,6 +6,7 @@ else "holdout". Applied independently per stratum so each stratum gets the same
 .env) and is never written to any artifact, so holdout membership is
 uncomputable from the published data.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -48,7 +49,9 @@ def allocate_stratified(rows: list[dict], salt: str, public_fraction: float) -> 
         ranked = sorted(srows, key=lambda r: split_score(r["row_id"], salt))
         n_holdout = round((1.0 - public_fraction) * len(ranked))
         # top n_holdout by score -> holdout; deterministic, exact count
-        holdout_ids = {r["row_id"] for r in ranked[len(ranked) - n_holdout:]} if n_holdout else set()
+        holdout_ids = (
+            {r["row_id"] for r in ranked[len(ranked) - n_holdout :]} if n_holdout else set()
+        )
         for r in srows:
             split = Split.HOLDOUT if r["row_id"] in holdout_ids else Split.PUBLIC
             out.append({**r, "split": split})

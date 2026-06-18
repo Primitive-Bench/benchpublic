@@ -39,9 +39,9 @@ class Primitive(str, Enum):
 class GroundTruthTier(str, Enum):
     """Three-tier ground-truth model from the WebSearch methodology."""
 
-    VERIFIED_EXTERNAL = "verified_external"      # human-verified against an external source
+    VERIFIED_EXTERNAL = "verified_external"  # human-verified against an external source
     AUTHORITATIVE_REGISTRY = "authoritative_registry"  # canonical registry of record
-    SENTINEL_PLANTED = "sentinel_planted"        # known item planted to detect drift/contamination
+    SENTINEL_PLANTED = "sentinel_planted"  # known item planted to detect drift/contamination
 
 
 # ---------------------------------------------------------------------------
@@ -77,7 +77,9 @@ class ScorerOutput(BaseModel):
     correct: Optional[bool] = Field(
         default=None, description="Binary pass/fail for proportion-based slices (hit@k, accuracy)."
     )
-    score: Optional[float] = Field(default=None, description="Primary continuous score if applicable.")
+    score: Optional[float] = Field(
+        default=None, description="Primary continuous score if applicable."
+    )
     metrics: dict[str, float] = Field(
         default_factory=dict,
         description="Named continuous metrics, e.g. {'ndcg@10': 0.82, 'latency_ms': 41.0}.",
@@ -123,7 +125,9 @@ class StatTest(BaseModel):
     ci_low: Optional[float] = None
     ci_high: Optional[float] = None
     n: Optional[int] = None
-    seed: Optional[int] = Field(default=None, description="Fixed seed for bootstrap reproducibility.")
+    seed: Optional[int] = Field(
+        default=None, description="Fixed seed for bootstrap reproducibility."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -143,7 +147,9 @@ class SliceResult(BaseModel):
     n: int = Field(..., description="Number of items in this slice for this adapter.")
     point_estimate: float = Field(..., description="Primary metric value (accuracy, nDCG, ...).")
     metric_name: str = Field(default="accuracy")
-    ci: Optional[StatTest] = Field(default=None, description="Wilson/bootstrap CI for the estimate.")
+    ci: Optional[StatTest] = Field(
+        default=None, description="Wilson/bootstrap CI for the estimate."
+    )
     separable: Optional[bool] = Field(
         default=None,
         description="Whether this adapter is statistically separable from the runner-up on this slice.",
@@ -172,10 +178,13 @@ class RunManifest(BaseModel):
     dataset_version: str = Field(..., description="Pinned golden-set version (e.g. 'ocr-2026.06').")
     split: Literal["public_dev", "heldout_test"] = "public_dev"
     # HMAC commitment over the split membership — split-integrity differentiator (D-07).
-    split_hmac: Optional[str] = Field(default=None, description="HMAC commitment of split membership.")
+    split_hmac: Optional[str] = Field(
+        default=None, description="HMAC commitment of split membership."
+    )
     # Canary marker embedded in golden files (BIG-bench convention) for contamination detection.
     canary_guid: Optional[str] = None
     env: dict[str, str] = Field(
-        default_factory=dict, description="Captured env: package versions, docker digests, hardware."
+        default_factory=dict,
+        description="Captured env: package versions, docker digests, hardware.",
     )
     notes: Optional[str] = None

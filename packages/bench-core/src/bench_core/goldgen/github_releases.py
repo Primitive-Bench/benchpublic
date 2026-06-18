@@ -4,6 +4,7 @@ GET /repos/{owner}/{repo}/releases — no server-side date filter, so we filter
 client-side on published_at. PAT raises the limit 60 -> 5000 req/hr.
 Authoritative timestamp: published_at. Canonical: html_url. Truth token: tag_name.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -30,9 +31,7 @@ class GithubReleasesAdapter:
         async with make_client(headers) as client:
             for repo in repos:
                 url = f"https://api.github.com/repos/{repo}/releases"
-                resp = await get_with_retry(
-                    client, url, params={"per_page": 30}, limiter=limiter
-                )
+                resp = await get_with_retry(client, url, params={"per_page": 30}, limiter=limiter)
                 if resp.status_code != 200:
                     continue
                 for rel in resp.json():
@@ -47,7 +46,9 @@ class GithubReleasesAdapter:
                     name = rel.get("name") or tag
                     descriptive = f"Official GitHub release page for {repo} {name}"
                     variants = build_variants(
-                        descriptive=descriptive, token=tag, token_phrase=f"release {tag}",
+                        descriptive=descriptive,
+                        token=tag,
+                        token_phrase=f"release {tag}",
                     )
                     out.append(
                         Candidate(

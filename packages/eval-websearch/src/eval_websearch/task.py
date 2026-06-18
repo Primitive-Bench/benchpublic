@@ -74,8 +74,9 @@ class Task(_Task):
     task_version = "websearch@1"
     dataset_version = "websearch-2026.06"
 
-    def __init__(self, golden_path: str | os.PathLike[str] | None = None,
-                 form: str = DEFAULT_FORM) -> None:
+    def __init__(
+        self, golden_path: str | os.PathLike[str] | None = None, form: str = DEFAULT_FORM
+    ) -> None:
         self.golden_path = Path(golden_path or os.environ.get("WEBSEARCH_GOLDEN", _DEFAULT_GOLDEN))
         self.form = form
 

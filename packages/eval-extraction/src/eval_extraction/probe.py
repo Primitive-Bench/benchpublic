@@ -14,6 +14,7 @@ scored cell is emitted as a `bench_schemas.ItemResult`. Token match is
 whitespace-normalized substring; FR doc numbers / CVE IDs / accession numbers are
 exact strings (handled in scoring.token_locate).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -82,25 +83,35 @@ async def _extract_row(
             try:
                 raw = adapter.invoke(invoke_item)
             except Exception as exc:  # missing key / transport — isolate to the cell
-                out.append(ItemResult(
-                    run_id=run_id, adapter=name, item_id=row["row_id"],
-                    primitive=Primitive.EXTRACTION, slices=slices,
-                    ground_truth_tier=tier,
-                    output=ScorerOutput(correct=None, miss_reason="fetch_failed"),
-                    error=repr(exc)[:200],
-                ))
+                out.append(
+                    ItemResult(
+                        run_id=run_id,
+                        adapter=name,
+                        item_id=row["row_id"],
+                        primitive=Primitive.EXTRACTION,
+                        slices=slices,
+                        ground_truth_tier=tier,
+                        output=ScorerOutput(correct=None, miss_reason="fetch_failed"),
+                        error=repr(exc)[:200],
+                    )
+                )
                 continue
             text = _main_text(raw)
             score = score_extraction(item, text)
-            out.append(ItemResult(
-                run_id=run_id, adapter=name, item_id=row["row_id"],
-                primitive=Primitive.EXTRACTION, slices=slices,
-                ground_truth_tier=tier,
-                output=score,
-                raw_output=raw.get("raw_output"),
-                latency_ms=raw.get("latency_ms"),
-                cost_usd=raw.get("cost_usd"),
-            ))
+            out.append(
+                ItemResult(
+                    run_id=run_id,
+                    adapter=name,
+                    item_id=row["row_id"],
+                    primitive=Primitive.EXTRACTION,
+                    slices=slices,
+                    ground_truth_tier=tier,
+                    output=score,
+                    raw_output=raw.get("raw_output"),
+                    latency_ms=raw.get("latency_ms"),
+                    cost_usd=raw.get("cost_usd"),
+                )
+            )
     return out
 
 
@@ -137,11 +148,13 @@ async def run(
         live = rows
     else:
         for r in rows:
-            lv = await liveness_gate({
-                "golden_url": r["canonical_url"],
-                "truth_token": r["truth_token"],
-                "source": r.get("source"),
-            })
+            lv = await liveness_gate(
+                {
+                    "golden_url": r["canonical_url"],
+                    "truth_token": r["truth_token"],
+                    "source": r.get("source"),
+                }
+            )
             if lv.live:
                 live.append(r)
             # else: dropped batch-wide, never charged to a vendor (logged upstream)
@@ -163,6 +176,13 @@ def run_sync(
     reps: int | None = None,
     skip_liveness: bool = False,
 ) -> list[ItemResult]:
-    return asyncio.run(run(
-        rows, run_id, vendor=vendor, limit=limit, reps=reps, skip_liveness=skip_liveness,
-    ))
+    return asyncio.run(
+        run(
+            rows,
+            run_id,
+            vendor=vendor,
+            limit=limit,
+            reps=reps,
+            skip_liveness=skip_liveness,
+        )
+    )

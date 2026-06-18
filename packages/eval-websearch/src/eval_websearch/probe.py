@@ -25,6 +25,7 @@ For each golden row in the chosen split:
 Vendors see only the query — never the gold URL or its metadata.
 k is PINNED per snapshot (see KS).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -47,8 +48,8 @@ from eval_websearch.scoring import (
     hit_at_k,
 )
 
-KS = (1, 5)                         # PINNED per snapshot; do not vary mid-cohort
-PROMOTE_DEPTH = max(KS)            # only fetch/promote within the scored window
+KS = (1, 5)  # PINNED per snapshot; do not vary mid-cohort
+PROMOTE_DEPTH = max(KS)  # only fetch/promote within the scored window
 DEAD_REASON_ABORT_FRACTION = 0.10
 
 
@@ -113,13 +114,18 @@ async def probe_row(
             try:
                 urls, raw = _search(adapter, query, max(KS))
             except Exception as exc:  # adapter failure isolates to this (row, vendor, rep)
-                out.append(ItemResult(
-                    run_id=run_id, adapter=name, item_id=row["row_id"],
-                    primitive=Primitive.WEBSEARCH, slices=row.get("slices", []),
-                    ground_truth_tier=tier,
-                    output=ScorerOutput(correct=None, miss_reason="adapter_error"),
-                    error=repr(exc)[:200],
-                ))
+                out.append(
+                    ItemResult(
+                        run_id=run_id,
+                        adapter=name,
+                        item_id=row["row_id"],
+                        primitive=Primitive.WEBSEARCH,
+                        slices=row.get("slices", []),
+                        ground_truth_tier=tier,
+                        output=ScorerOutput(correct=None, miss_reason="adapter_error"),
+                        error=repr(exc)[:200],
+                    )
+                )
                 continue
 
             h = hit_at_k(urls, eq.members, KS)
@@ -130,10 +136,16 @@ async def probe_row(
                     eq.add(final_url)
                     promoted_here.append(ret_url)
                     if adjudication is not None:
-                        adjudication.append({
-                            "row_id": row["row_id"], "event": "mirror_promoted",
-                            "url": ret_url, "final": final_url, "vendor": name, "ts": _now(),
-                        })
+                        adjudication.append(
+                            {
+                                "row_id": row["row_id"],
+                                "event": "mirror_promoted",
+                                "url": ret_url,
+                                "final": final_url,
+                                "vendor": name,
+                                "ts": _now(),
+                            }
+                        )
                 if promoted_here:
                     h = hit_at_k(urls, eq.members, KS)  # rescore with the promoted mirror
 
@@ -145,8 +157,12 @@ async def probe_row(
             # stays `not_found`; sentinel_verdict carries the split. Null for all
             # non-sentinel rows and for any sentinel hit/promotion.
             sentinel_verdict = None
-            if (row["stratum"] == Stratum.SENTINEL and not h[max(KS)]
-                    and not promoted_here and form == "descriptive"):
+            if (
+                row["stratum"] == Stratum.SENTINEL
+                and not h[max(KS)]
+                and not promoted_here
+                and form == "descriptive"
+            ):
                 try:
                     sentinel_verdict = _sentinel_verdict(adapter, row, eq)
                 except Exception:
@@ -159,25 +175,33 @@ async def probe_row(
             metrics["n_results"] = float(len(urls))
             if raw.get("latency_ms") is not None:
                 metrics["latency_ms"] = float(raw["latency_ms"])
-            out.append(ItemResult(
-                run_id=run_id, adapter=name, item_id=row["row_id"],
-                primitive=Primitive.WEBSEARCH, slices=row.get("slices", []),
-                ground_truth_tier=tier,
-                output=ScorerOutput(
-                    # `correct` drives the proportion stats; the pinned hit@max(KS)
-                    # is the binary outcome (descriptive form = honest discriminator).
-                    correct=bool(h[max(KS)]),
-                    score=float(h[max(KS)]),
-                    metrics=metrics,
-                    miss_reason=miss_reason,
-                    equivalence_class=eq.canonical,
-                    rationale=(f"query_form={form}; sentinel_verdict={sentinel_verdict}"
-                               if sentinel_verdict else f"query_form={form}"),
-                ),
-                raw_output=raw.get("raw_output"),
-                latency_ms=raw.get("latency_ms"),
-                cost_usd=raw.get("cost_usd"),
-            ))
+            out.append(
+                ItemResult(
+                    run_id=run_id,
+                    adapter=name,
+                    item_id=row["row_id"],
+                    primitive=Primitive.WEBSEARCH,
+                    slices=row.get("slices", []),
+                    ground_truth_tier=tier,
+                    output=ScorerOutput(
+                        # `correct` drives the proportion stats; the pinned hit@max(KS)
+                        # is the binary outcome (descriptive form = honest discriminator).
+                        correct=bool(h[max(KS)]),
+                        score=float(h[max(KS)]),
+                        metrics=metrics,
+                        miss_reason=miss_reason,
+                        equivalence_class=eq.canonical,
+                        rationale=(
+                            f"query_form={form}; sentinel_verdict={sentinel_verdict}"
+                            if sentinel_verdict
+                            else f"query_form={form}"
+                        ),
+                    ),
+                    raw_output=raw.get("raw_output"),
+                    latency_ms=raw.get("latency_ms"),
+                    cost_usd=raw.get("cost_usd"),
+                )
+            )
     return out
 
 
@@ -204,8 +228,13 @@ async def run(
     live_rows: list[dict] = []
     dead_reasons: dict[str, int] = {}
     for r in rows:
-        lv = await liveness_gate({"golden_url": r["canonical_url"], "truth_token": r["truth_token"],
-                                  "source": r.get("source")})
+        lv = await liveness_gate(
+            {
+                "golden_url": r["canonical_url"],
+                "truth_token": r["truth_token"],
+                "source": r.get("source"),
+            }
+        )
         if lv.live:
             live_rows.append(r)
         else:
@@ -213,8 +242,10 @@ async def run(
     if rows:
         for reason, cnt in dead_reasons.items():
             if cnt / len(rows) > DEAD_REASON_ABORT_FRACTION:
-                print(f"[probe] ABORT: {cnt}/{len(rows)} rows failed liveness for "
-                      f"'{reason}' (>{DEAD_REASON_ABORT_FRACTION:.0%}); batch biased.")
+                print(
+                    f"[probe] ABORT: {cnt}/{len(rows)} rows failed liveness for "
+                    f"'{reason}' (>{DEAD_REASON_ABORT_FRACTION:.0%}); batch biased."
+                )
                 return []
 
     adapters = _build_adapters(vendors, adapter_specs)
@@ -222,12 +253,16 @@ async def run(
     records: list[ItemResult] = []
     for r in live_rows:
         records.extend(await probe_row(r, adapters, run_id, reps, form, adjudication))
-    print(f"[probe] {len(live_rows)}/{len(rows)} rows live; form={form}; "
-          f"{len(records)} records; dead={dead_reasons}; promotions={len(adjudication)}")
+    print(
+        f"[probe] {len(live_rows)}/{len(rows)} rows live; form={form}; "
+        f"{len(records)} records; dead={dead_reasons}; promotions={len(adjudication)}"
+    )
     return records
 
 
-def _build_adapters(vendors: list[str], adapter_specs: dict[str, object] | None) -> dict[str, object]:
+def _build_adapters(
+    vendors: list[str], adapter_specs: dict[str, object] | None
+) -> dict[str, object]:
     """Instantiate the requested bench-adapters search adapters by name.
 
     If `adapter_specs[name]` already exposes `.invoke`, it is used as-is (handy
@@ -254,5 +289,6 @@ def run_sync(
     form: str = DEFAULT_FORM,
     adapter_specs: dict[str, object] | None = None,
 ) -> list[ItemResult]:
-    return asyncio.run(run(rows, vendors, run_id, reps=reps, form=form,
-                           adapter_specs=adapter_specs))
+    return asyncio.run(
+        run(rows, vendors, run_id, reps=reps, form=form, adapter_specs=adapter_specs)
+    )

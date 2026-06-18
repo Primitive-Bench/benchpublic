@@ -11,6 +11,7 @@ token_absent: a vendor at 33% survival because it is being firewalled
 went stale or it extracts poorly (`token_absent`). The miss breakdown is what
 lets a reader see that the gap was anti-bot blocking, not freshness.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -51,19 +52,22 @@ def run(items: Iterable[ItemResult]) -> list[dict]:
         hits = by_vendor.get(vendor, [])
         ci = wilson(sum(hits), len(hits)) if hits else None
         misses = dict(miss_counts.get(vendor, {}))
-        board.append({
-            "vendor": vendor, "n": len(hits),
-            "token_survival": round(ci.statistic, 4) if ci else None,
-            "wilson_low": round(ci.ci_low, 4) if ci else None,
-            "wilson_high": round(ci.ci_high, 4) if ci else None,
-            "errors": errors.get(vendor, 0),
-            # Miss decomposition — the anti-bot-blocking story. `blocked` here is
-            # the count of misses that hit an access-wall, NOT genuine misses.
-            "miss_breakdown": misses,
-            "blocked": misses.get("blocked", 0),
-            "truncated": misses.get("truncated", 0),
-            "token_absent": misses.get("token_absent", 0),
-        })
+        board.append(
+            {
+                "vendor": vendor,
+                "n": len(hits),
+                "token_survival": round(ci.statistic, 4) if ci else None,
+                "wilson_low": round(ci.ci_low, 4) if ci else None,
+                "wilson_high": round(ci.ci_high, 4) if ci else None,
+                "errors": errors.get(vendor, 0),
+                # Miss decomposition — the anti-bot-blocking story. `blocked` here is
+                # the count of misses that hit an access-wall, NOT genuine misses.
+                "miss_breakdown": misses,
+                "blocked": misses.get("blocked", 0),
+                "truncated": misses.get("truncated", 0),
+                "token_absent": misses.get("token_absent", 0),
+            }
+        )
     board.sort(key=lambda x: (x["token_survival"] is None, -(x["token_survival"] or 0)))
 
     print("[extract-report] token-survival rate by vendor:")
@@ -73,7 +77,9 @@ def run(items: Iterable[ItemResult]) -> list[dict]:
         else:
             blk = row["blocked"]
             blk_note = f", blocked={blk}" if blk else ""
-            print(f"  {row['vendor']:>13}  {row['token_survival']:.3f}  "
-                  f"[{row['wilson_low']:.3f}, {row['wilson_high']:.3f}]  "
-                  f"(n={row['n']}, errors={row['errors']}{blk_note})")
+            print(
+                f"  {row['vendor']:>13}  {row['token_survival']:.3f}  "
+                f"[{row['wilson_low']:.3f}, {row['wilson_high']:.3f}]  "
+                f"(n={row['n']}, errors={row['errors']}{blk_note})"
+            )
     return board

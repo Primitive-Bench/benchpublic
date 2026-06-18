@@ -17,6 +17,7 @@ row's source + metadata (no model, no fetch), so they are reproducible and
 auditable. To add a slice, add a source that produces it (see SOURCE_SLICES) or a
 content rule below — then re-run the reslice step.
 """
+
 from __future__ import annotations
 
 import re
@@ -26,16 +27,16 @@ from bench_stats import tied_rank_band, wilson
 
 # Canonical slice vocabulary (the 10 intent slices; maps the Stage-2 product list).
 SLICES = (
-    "company_lookup",        # startup/company lookup
-    "government_registry",   # gov/registry pages
-    "citation_needed",       # claims needing an authoritative citation
-    "technical_docs",        # technical documentation / specs
-    "fresh_news",            # time-sensitive news/events
-    "pricing_pages",         # pricing / plans pages
-    "b2b_tools",             # obscure B2B tools / vendors
-    "docs_lookup",           # general docs lookup
-    "navigational",          # direct, known-item navigational lookups
-    "long_tail",             # rare, low-traffic queries
+    "company_lookup",  # startup/company lookup
+    "government_registry",  # gov/registry pages
+    "citation_needed",  # claims needing an authoritative citation
+    "technical_docs",  # technical documentation / specs
+    "fresh_news",  # time-sensitive news/events
+    "pricing_pages",  # pricing / plans pages
+    "b2b_tools",  # obscure B2B tools / vendors
+    "docs_lookup",  # general docs lookup
+    "navigational",  # direct, known-item navigational lookups
+    "long_tail",  # rare, low-traffic queries
 )
 
 # Per-source default slices. The current registries are all authoritative
@@ -66,10 +67,15 @@ _LONG_TAIL_MAXLEN = 60
 def assign_slices(row: dict) -> list[str]:
     """Deterministic slice tags for a row. Union of source defaults + content rules."""
     tags: set[str] = set(SOURCE_SLICES.get(row.get("source", ""), ()))
-    text = " ".join(filter(None, [
-        row.get("query", ""),
-        *(row.get("query_variants", {}) or {}).values(),
-    ]))
+    text = " ".join(
+        filter(
+            None,
+            [
+                row.get("query", ""),
+                *(row.get("query_variants", {}) or {}).values(),
+            ],
+        )
+    )
     for slice_name, pattern in _CONTENT_RULES:
         if pattern.search(text):
             tags.add(slice_name)
@@ -87,7 +93,7 @@ def assign_slices(row: dict) -> list[str]:
 # otherwise a TIE band. This is what lets the benchmark say "Exa wins
 # company_lookup, exa/serpapi tie government_registry" instead of "Vendor A is #1".
 # ---------------------------------------------------------------------------
-MIN_SLICE_N = 8        # below this a slice cell prints n but is flagged thin
+MIN_SLICE_N = 8  # below this a slice cell prints n but is flagged thin
 
 
 def slice_rows(meta: dict[str, dict]) -> dict[str, set[str]]:
@@ -114,7 +120,9 @@ def slice_leaderboard(
         if not covered:
             continue
         hits = sum(outcomes[(rid, v)] for rid in covered)
-        ci = wilson(hits, len(covered))   # bench_schemas.StatTest: .statistic=point, .ci_low/.ci_high
+        ci = wilson(
+            hits, len(covered)
+        )  # bench_schemas.StatTest: .statistic=point, .ci_low/.ci_high
         rates.append((v, ci.statistic, ci.ci_low, ci.ci_high, len(covered)))
     rates.sort(key=lambda x: -x[1])
     return rates
@@ -132,9 +140,7 @@ def winner_band(rates: list[tuple[str, float, float, float, int]]) -> list[str]:
     return tied_rank_band([(v, p, lo, hi) for v, p, lo, hi, _ in rates]).band
 
 
-def wins_matrix(
-    meta: dict[str, dict], outcomes: dict[tuple[str, str], int]
-) -> list[dict]:
+def wins_matrix(meta: dict[str, dict], outcomes: dict[tuple[str, str], int]) -> list[dict]:
     """The slice->winner matrix. One entry per slice with data:
 
         {slice, n, band, winner, losers, rates}
@@ -155,14 +161,15 @@ def wins_matrix(
             continue
         band = winner_band(rates)
         n = max(r[4] for r in rates)
-        losers = [v for v in vendors if v not in band
-                  and any((rid, v) in outcomes for rid in rids)]
-        matrix.append({
-            "slice": s,
-            "n": n,
-            "band": band,
-            "winner": band[0] if len(band) == 1 else None,
-            "losers": losers,
-            "rates": rates,
-        })
+        losers = [v for v in vendors if v not in band and any((rid, v) in outcomes for rid in rids)]
+        matrix.append(
+            {
+                "slice": s,
+                "n": n,
+                "band": band,
+                "winner": band[0] if len(band) == 1 else None,
+                "losers": losers,
+                "rates": rates,
+            }
+        )
     return matrix

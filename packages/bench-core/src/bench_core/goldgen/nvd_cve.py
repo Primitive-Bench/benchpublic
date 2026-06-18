@@ -5,6 +5,7 @@ Header `apiKey` raises the limit from 5 to 50 req/30s.
 Authoritative timestamp: published. Canonical: nvd.nist.gov/vuln/detail/{CVE}.
 Truth token: the CVE ID itself, which appears in the page body.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -55,7 +56,9 @@ class NvdAdapter:
                     continue
                 desc = _short_desc(cve)
                 # descriptive form must NOT contain the CVE id; build_variants strips it.
-                descriptive = f"NVD vulnerability record: {desc}" if desc else "NVD vulnerability record"
+                descriptive = (
+                    f"NVD vulnerability record: {desc}" if desc else "NVD vulnerability record"
+                )
                 variants = build_variants(descriptive=descriptive, token=cid, token_phrase=cid)
                 published = cve.get("published") or ""
                 out.append(

@@ -8,6 +8,7 @@ Authoritative timestamp: <updated> on each entry. Canonical: the filing-index
 URL. Truth token: the accession number (########-YY-######), printed on the
 filing index page.
 """
+
 from __future__ import annotations
 
 import re
@@ -62,7 +63,9 @@ class SecEdgarAdapter:
                 except ET.ParseError:
                     continue
                 for entry in root.findall("a:entry", ATOM_NS):
-                    title = (entry.findtext("a:title", default="", namespaces=ATOM_NS) or "").strip()
+                    title = (
+                        entry.findtext("a:title", default="", namespaces=ATOM_NS) or ""
+                    ).strip()
                     updated = entry.findtext("a:updated", default="", namespaces=ATOM_NS) or ""
                     link_el = entry.find("a:link", ATOM_NS)
                     href = link_el.get("href") if link_el is not None else ""
@@ -80,7 +83,8 @@ class SecEdgarAdapter:
                             pass
                     descriptive = f"Official SEC EDGAR filing index for {form}: {title}"
                     variants = build_variants(
-                        descriptive=descriptive, token=accession,
+                        descriptive=descriptive,
+                        token=accession,
                         token_phrase=f"accession number {accession}",
                     )
                     out.append(

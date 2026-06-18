@@ -15,6 +15,7 @@ hit@k is delegated to `bench_stats.hit_at_k` for the canonical metric; a thin
 local wrapper preserves the original `(returned_urls, members, ks)` signature used
 by the probe so an unanticipated mirror promoted by vendor A counts for the batch.
 """
+
 from __future__ import annotations
 
 from bench_core.http import fetch
@@ -76,19 +77,21 @@ SENTINEL_RANKED_BELOW_K = "ranked_below_k"
 SENTINEL_NOT_INDEXED = "not_indexed"
 
 
-def classify_miss(returned: list[str], eq: EquivalenceClass, promoted: bool, ks: tuple[int, ...]) -> str:
+def classify_miss(
+    returned: list[str], eq: EquivalenceClass, promoted: bool, ks: tuple[int, ...]
+) -> str:
     """Decompose a miss into the taxonomy. `eq` already includes any promotions.
 
     `ks` is the pinned set-membership window; the cutoff is max(ks).
     """
-    rank = first_correct_rank(returned, eq)        # eq already includes promotions
+    rank = first_correct_rank(returned, eq)  # eq already includes promotions
     if promoted and rank != -1 and rank > max(ks):
         return MISS_RANKED_BELOW_K
     if promoted:
-        return MISS_MIRROR_PROMOTED                # promoted but still below k
+        return MISS_MIRROR_PROMOTED  # promoted but still below k
     if rank != -1:
         return MISS_RANKED_BELOW_K
-    return MISS_NOT_FOUND                          # not_indexed-or-deeper (needs sentinel)
+    return MISS_NOT_FOUND  # not_indexed-or-deeper (needs sentinel)
 
 
 async def find_promotions(

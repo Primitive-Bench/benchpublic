@@ -19,7 +19,9 @@ class Adapter(Protocol):
 
     spec: AdapterSpec
 
-    def invoke(self, item: dict[str, Any]) -> dict[str, Any]:  # returns {raw_output, latency_ms, cost_usd, ...}
+    def invoke(
+        self, item: dict[str, Any]
+    ) -> dict[str, Any]:  # returns {raw_output, latency_ms, cost_usd, ...}
         ...
 
 

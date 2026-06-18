@@ -1,4 +1,5 @@
 """Typed configuration loaded from the environment (.env)."""
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -24,16 +25,21 @@ class Settings(BaseSettings):
     # Accept the wrodium-bench WRODIUM_<VENDOR>_API_KEY convention as the primary
     # env name, falling back to the bare name.
     exa_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_EXA_API_KEY", "EXA_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_EXA_API_KEY", "EXA_API_KEY")
+    )
     brave_search_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_BRAVE_API_KEY", "BRAVE_SEARCH_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_BRAVE_API_KEY", "BRAVE_SEARCH_API_KEY")
+    )
     tavily_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_TAVILY_API_KEY", "TAVILY_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_TAVILY_API_KEY", "TAVILY_API_KEY")
+    )
     serpapi_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_SERP_API_KEY", "SERPAPI_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_SERP_API_KEY", "SERPAPI_KEY")
+    )
     perplexity_api_key: str = Field(
         default="",
-        validation_alias=AliasChoices("WRODIUM_PERPLEXITY_API_KEY", "PERPLEXITY_API_KEY"))
+        validation_alias=AliasChoices("WRODIUM_PERPLEXITY_API_KEY", "PERPLEXITY_API_KEY"),
+    )
     google_cse_key: str = ""
     google_cse_engine_id: str = ""
     bing_search_key: str = ""
@@ -41,16 +47,22 @@ class Settings(BaseSettings):
 
     # extraction vendors (web_extraction primitive).
     firecrawl_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_FIRECRAWL_API_KEY", "FIRECRAWL_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_FIRECRAWL_API_KEY", "FIRECRAWL_API_KEY")
+    )
     jina_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_JINA_API_KEY", "JINA_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_JINA_API_KEY", "JINA_API_KEY")
+    )
     apify_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_APIFY_API_KEY", "APIFY_API_KEY"))
+        default="", validation_alias=AliasChoices("WRODIUM_APIFY_API_KEY", "APIFY_API_KEY")
+    )
     apify_actor: str = Field(
         default="apify/website-content-crawler",
-        validation_alias=AliasChoices("WRODIUM_APIFY_ACTOR", "APIFY_ACTOR"))
+        validation_alias=AliasChoices("WRODIUM_APIFY_ACTOR", "APIFY_ACTOR"),
+    )
     brightdata_api_key: str = Field(
-        default="", validation_alias=AliasChoices("WRODIUM_BRIGHTDATA_API_KEY", "BRIGHTDATA_API_KEY"))
+        default="",
+        validation_alias=AliasChoices("WRODIUM_BRIGHTDATA_API_KEY", "BRIGHTDATA_API_KEY"),
+    )
 
     # split secret — never serialized into any artifact
     hmac_salt: str = Field(default="")

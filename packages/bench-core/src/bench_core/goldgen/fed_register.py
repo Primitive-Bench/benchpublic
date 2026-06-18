@@ -4,6 +4,7 @@ GET /api/v1/documents.json?conditions[publication_date][gte]=YYYY-MM-DD
 Authoritative timestamp: publication_date. Canonical: html_url.
 Truth token: document_number (e.g. "2026-26402"), printed on the document page.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -58,7 +59,8 @@ class FederalRegisterAdapter:
                     f"Official Federal Register page for the {agency} {phrase} “{title}”"
                 ).strip()
                 variants = build_variants(
-                    descriptive=descriptive, token=docnum,
+                    descriptive=descriptive,
+                    token=docnum,
                     token_phrase=f"Federal Register document number {docnum}",
                 )
                 out.append(

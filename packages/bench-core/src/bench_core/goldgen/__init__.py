@@ -5,6 +5,7 @@ GitHub Releases), de-dupes by row_id against rows already seen, and appends
 golden Candidate rows to data/candidates/candidates.jsonl. No verification
 happens here — that is bench_core.verify's job.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -57,8 +58,9 @@ def _existing_ids() -> set[str]:
     return {r["row_id"] for r in read_jsonl(CANDIDATES_FILE)}
 
 
-async def run(source: str = "all", since: datetime | None = None, limit: int = 100,
-              days: int = 2) -> int:
+async def run(
+    source: str = "all", since: datetime | None = None, limit: int = 100, days: int = 2
+) -> int:
     since = since or since_default(days)
     names = list(ADAPTERS) if source == "all" else [source]
     seen = _existing_ids()

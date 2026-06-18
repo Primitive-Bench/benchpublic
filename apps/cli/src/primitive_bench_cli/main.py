@@ -22,8 +22,10 @@ def init(primitive: str) -> None:
 
 
 @app.command()
-def run(config: str = typer.Option(..., help="Path to run config YAML"),
-        seed: int = typer.Option(0, help="Master deterministic seed")) -> None:
+def run(
+    config: str = typer.Option(..., help="Path to run config YAML"),
+    seed: int = typer.Option(0, help="Master deterministic seed"),
+) -> None:
     """Run an eval and write a per-run result directory."""
     typer.echo(f"[stub] would run config={config} seed={seed}")
 

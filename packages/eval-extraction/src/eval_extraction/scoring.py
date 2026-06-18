@@ -26,6 +26,7 @@ Miss decomposition is the methodology highlight. A miss is one of:
   * token_absent  — real content was extracted, the token simply is not in it.
   * empty         — the vendor returned nothing usable.
 """
+
 from __future__ import annotations
 
 import re
@@ -41,10 +42,18 @@ _WS = re.compile(r"\s+")
 # instrumentation behind "the gap was anti-bot blocking, not freshness": these
 # signatures are exactly what 98/100 of Exa's Federal Register misses match.
 _BLOCK_SIGNATURES = (
-    "request access", "aggressive automated scraping", "just a moment",
-    "attention required", "verify you are human", "are you a robot",
-    "captcha", "access denied", "enable javascript", "cloudflare",
-    "unusual traffic", "403 forbidden",
+    "request access",
+    "aggressive automated scraping",
+    "just a moment",
+    "attention required",
+    "verify you are human",
+    "are you a robot",
+    "captcha",
+    "access denied",
+    "enable javascript",
+    "cloudflare",
+    "unusual traffic",
+    "403 forbidden",
 )
 
 
@@ -145,7 +154,7 @@ def score_extraction(
         score=1.0 if hit else 0.0,
         miss_reason=miss_reason,
         metrics={
-            "token_offset": float(offset),   # -1 absent; ~0 = title/snippet zone
+            "token_offset": float(offset),  # -1 absent; ~0 = title/snippet zone
             "chars": float(len(main_text or "")),
             "norm_chars": float(norm_len),
         },
