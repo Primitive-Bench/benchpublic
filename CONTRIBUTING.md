@@ -43,8 +43,10 @@ We use **[uv](https://docs.astral.sh/uv/)** (workspace) + **Turborepo**. Python 
 git clone https://github.com/Primitive-Bench/primitive-bench.git
 cd primitive-bench
 uv sync --all-packages        # install every workspace package (editable)
+uv run pre-commit install     # enable the lint/format/hygiene git hooks
 uv run pytest -q              # run the test suite
 uv run ruff check .           # lint
+uv run ruff format --check .  # formatting (the pre-commit hook applies it for you)
 ```
 
 Run a single package's tests: `uv run pytest packages/bench-stats -q`.
