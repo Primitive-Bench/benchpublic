@@ -31,12 +31,22 @@ from bench_adapters.ocr import pricing
 from bench_adapters.registry import Adapter, register
 
 # The single, version-pinned transcription instruction shared by every PROMPTED
-# vision-LLM adapter. Pinning one prompt across vendors removes prompt phrasing as
-# a confound; it is recorded in the run manifest. Native-OCR engines ignore it.
+# vision-LLM adapter (recorded in the run manifest; native-OCR engines ignore it).
+# Used VERBATIM from olmOCR's own image-only bench prompt so our pass@test numbers
+# reflect the same instruction olmOCR-bench applies — not a paraphrase. Source:
+# allenai/olmocr olmocr/bench/prompts.py::build_openai_silver_data_prompt_no_document_anchoring
+# (Apache-2.0). A `tests/test_ocr_prompt_fidelity.py` check guards byte-equality.
 OCR_PROMPT = (
-    "Transcribe all text in this image exactly as it appears, preserving reading "
-    "order and line breaks. Output only the transcription — no commentary, no "
-    "preamble, and no markdown code fences."
+    "Below is the image of one page of a PDF document. "
+    "Just return the plain text representation of this document as if you were reading it naturally.\n"
+    "Turn equations into a LaTeX representation, and tables into markdown format. "
+    "Remove the headers and footers, but keep references and footnotes.\n"
+    "Read any natural handwriting.\n"
+    "This is likely one page out of several in the document, so be sure to preserve "
+    "any sentences that come from the previous page, or continue onto the next page, "
+    "exactly as they are.\n"
+    "If there is no text at all that you think you should read, you can output null.\n"
+    "Do not hallucinate."
 )
 
 DEFAULT_MAX_EDGE = 1568  # downscale long edge before sending (Sonnet 4.6 caps ~1568px)
