@@ -58,14 +58,22 @@ def main() -> None:
     args = ap.parse_args()
 
     try:
-        from huggingface_hub import snapshot_download
+        from huggingface_hub import hf_hub_download, snapshot_download
+        from huggingface_hub.utils import EntryNotFoundError
     except ImportError as exc:  # pragma: no cover
         raise SystemExit(f"huggingface-hub required: {exc}") from exc
 
+    # Download only the small JSONL test files up front, then fetch the (few) sampled
+    # PDFs on demand below — avoids pulling the full multi-GB PDF corpus for a subset.
     snap = Path(snapshot_download(args.repo, repo_type="dataset",
-                                  allow_patterns=["bench_data/**"]))
-    pdf_root = snap / "bench_data" / "pdfs"
+                                  allow_patterns=["bench_data/*.jsonl"]))
     print(f"snapshot: {snap}")
+
+    def fetch_pdf(rel: str) -> Path | None:
+        try:
+            return Path(hf_hub_download(args.repo, f"bench_data/pdfs/{rel}", repo_type="dataset"))
+        except EntryNotFoundError:
+            return None
 
     rows_out: list[dict] = []
     missing: list[str] = []
@@ -82,8 +90,8 @@ def main() -> None:
             t = json.loads(ln)
             if "type" not in t or not t.get("pdf"):
                 continue
-            pdf = pdf_root / t["pdf"]
-            if not pdf.exists():
+            pdf = fetch_pdf(t["pdf"])
+            if pdf is None:
                 missing.append(t["pdf"])
                 continue
             page = int(t.get("page", 1))
