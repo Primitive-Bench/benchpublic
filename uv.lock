@@ -218,6 +218,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+local-rerank = [
+    { name = "sentence-transformers" },
+]
 local-retrieval = [
     { name = "sentence-transformers" },
 ]
@@ -226,9 +229,10 @@ local-retrieval = [
 requires-dist = [
     { name = "bench-schemas", editable = "packages/bench-schemas" },
     { name = "httpx", specifier = ">=0.27" },
+    { name = "sentence-transformers", marker = "extra == 'local-rerank'", specifier = ">=3.0" },
     { name = "sentence-transformers", marker = "extra == 'local-retrieval'", specifier = ">=3.0" },
 ]
-provides-extras = ["local-retrieval"]
+provides-extras = ["local-rerank", "local-retrieval"]
 
 [[package]]
 name = "bench-core"
@@ -593,6 +597,9 @@ dependencies = [
     { name = "bench-core" },
     { name = "bench-schemas" },
     { name = "bench-stats" },
+    { name = "datasets" },
+    { name = "huggingface-hub" },
+    { name = "sentence-transformers" },
 ]
 
 [package.metadata]
@@ -601,6 +608,9 @@ requires-dist = [
     { name = "bench-core", editable = "packages/bench-core" },
     { name = "bench-schemas", editable = "packages/bench-schemas" },
     { name = "bench-stats", editable = "packages/bench-stats" },
+    { name = "datasets", specifier = ">=2.0" },
+    { name = "huggingface-hub", specifier = ">=0.24" },
+    { name = "sentence-transformers", specifier = ">=3.0" },
 ]
 
 [[package]]

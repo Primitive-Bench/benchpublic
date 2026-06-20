@@ -12,6 +12,12 @@ uv.lock.bak
 .turbo/
 node_modules/
 
+# Node / Next (apps/mcp)
+.next/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
 # Run outputs (per-run result dirs are local; ingested into DuckDB, not committed)
 runs/
 *.duckdb
@@ -21,6 +27,10 @@ runs/
 golden-sets-heldout/
 *.heldout.jsonl
 *.hmac.key
+
+# Reranker: the full dev split is generated locally from MTEB reranking sets
+# (SciDocs / AskUbuntu) and is NOT redistributed — only dev.example.jsonl is committed.
+golden-sets-public/reranker/dev.jsonl
 
 # Retrieval: the full dev split is generated locally from BEIR sets (SciFact /
 # NFCorpus / FiQA, BM25-pooled) and is NOT redistributed — only dev.example.jsonl
