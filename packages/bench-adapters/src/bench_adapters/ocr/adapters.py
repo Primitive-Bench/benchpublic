@@ -49,7 +49,9 @@ OCR_PROMPT = (
     "Do not hallucinate."
 )
 
-DEFAULT_MAX_EDGE = 1568  # downscale long edge before sending (Sonnet 4.6 caps ~1568px)
+# Long-edge cap before sending. 2048 matches olmOCR-bench's render (target_longest_image_dim);
+# Claude re-caps to ~1568px internally, but this matches olmOCR's send size for GPT/Gemini/Mistral.
+DEFAULT_MAX_EDGE = 2048
 _MAX_TOKEN_TRIES = (8192, 16384)  # truncation guard: retry larger once, then non_attempt
 
 
