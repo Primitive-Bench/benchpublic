@@ -125,9 +125,9 @@ def _post(url: str, body: dict[str, Any], headers: dict[str, str], timeout: floa
     raise RateLimited("unreachable")  # pragma: no cover
 
 
-def _ok(text: str, latency_ms: float, cost: float, mode: str) -> dict[str, Any]:
+def _ok(text: str, latency_ms: float, cost: float, mode: str, served: str = "") -> dict[str, Any]:
     return {"raw_output": text, "text": text, "latency_ms": latency_ms,
-            "cost_usd": cost, "mode": mode}
+            "cost_usd": cost, "mode": mode, "served_model": served}
 
 
 def _tesseract_version() -> str:
@@ -163,7 +163,7 @@ class TesseractAdapter(Adapter):
             text = pytesseract.image_to_string(img)
         except pytesseract.TesseractNotFoundError as exc:
             raise VendorUnavailable(f"tesseract binary not found: {exc}") from exc
-        return _ok(text, (time.monotonic() - t0) * 1000.0, 0.0, self.mode)
+        return _ok(text, (time.monotonic() - t0) * 1000.0, 0.0, self.mode, self.model_version)
 
 
 # --- prompted vision-LLM adapters ----------------------------------------------
@@ -178,6 +178,7 @@ class _VLM:
     out_tok: int
     truncated: bool = False
     refused: bool = False
+    served: str = ""  # exact model id the API reports serving (provenance)
 
 
 class _VisionOCRAdapter(Adapter):
@@ -208,16 +209,16 @@ class _VisionOCRAdapter(Adapter):
             if r.truncated:
                 continue  # retry once with a larger cap
             cost = pricing.token_cost(self.model_version, r.in_tok, r.out_tok)
-            return _ok(r.text, latency, cost, self.mode)
+            return _ok(r.text, latency, cost, self.mode, r.served)
         return {"non_attempt": "truncated"}
 
 
-@register("claude-sonnet-ocr")
+@register("claude-opus-ocr")
 class ClaudeOCR(_VisionOCRAdapter):
-    """Anthropic Claude (vision) via the official `anthropic` SDK."""
+    """Anthropic Claude Opus (vision) via the official `anthropic` SDK."""
 
     vendor = "anthropic"
-    model_version = os.environ.get("CLAUDE_OCR_MODEL", "claude-sonnet-4-6")
+    model_version = os.environ.get("CLAUDE_OCR_MODEL", "claude-opus-4-8")
     env_names = ("ANTHROPIC_API_KEY",)
 
     def _transcribe(self, key: str, b64: str, mime: str, max_tokens: int) -> _VLM:
@@ -242,30 +243,40 @@ class ClaudeOCR(_VisionOCRAdapter):
         text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
         return _VLM(text, resp.usage.input_tokens, resp.usage.output_tokens,
                     truncated=resp.stop_reason == "max_tokens",
-                    refused=resp.stop_reason == "refusal")
+                    refused=resp.stop_reason == "refusal",
+                    served=getattr(resp, "model", "") or "")
 
 
 @register("gpt-ocr")
 class GptOCR(_VisionOCRAdapter):
-    """OpenAI GPT-4o vision via the chat-completions REST API."""
+    """OpenAI GPT vision via chat-completions. Defaults to the GPT-5.x flagship —
+    a reasoning model, so the request uses `max_completion_tokens` + a low
+    `reasoning_effort` (OCR is transcription, not reasoning) and no `temperature`.
+    A non-reasoning override (e.g. gpt-4o) falls back to temperature=0."""
 
     vendor = "openai"
-    model_version = os.environ.get("GPT_OCR_MODEL", "gpt-4o")
+    model_version = os.environ.get("GPT_OCR_MODEL", "gpt-5.5")
     env_names = ("OPENAI_API_KEY",)
 
     def _transcribe(self, key: str, b64: str, mime: str, max_tokens: int) -> _VLM:
-        body = {"model": self.model_version, "max_tokens": max_tokens, "temperature": 0,
-                "messages": [{"role": "user", "content": [
-                    {"type": "text", "text": OCR_PROMPT},
-                    {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
-                ]}]}
+        body: dict[str, Any] = {"model": self.model_version,
+                                "max_completion_tokens": max_tokens,
+                                "messages": [{"role": "user", "content": [
+                                    {"type": "text", "text": OCR_PROMPT},
+                                    {"type": "image_url",
+                                     "image_url": {"url": f"data:{mime};base64,{b64}"}},
+                                ]}]}
+        if self.model_version.startswith(("gpt-5", "o1", "o3", "o4")):  # reasoning models
+            body["reasoning_effort"] = "low"
+        else:
+            body["temperature"] = 0
         d = _post("https://api.openai.com/v1/chat/completions", body,
                   {"Authorization": f"Bearer {key}"})
         ch = d["choices"][0]
         u = d.get("usage", {})
         return _VLM(ch["message"].get("content") or "",
                     u.get("prompt_tokens", 0), u.get("completion_tokens", 0),
-                    truncated=ch.get("finish_reason") == "length")
+                    truncated=ch.get("finish_reason") == "length", served=d.get("model", ""))
 
 
 @register("gemini-ocr")
@@ -273,7 +284,7 @@ class GeminiOCR(_VisionOCRAdapter):
     """Google Gemini vision via the generateContent REST API."""
 
     vendor = "google"
-    model_version = os.environ.get("GEMINI_OCR_MODEL", "gemini-2.5-pro")
+    model_version = os.environ.get("GEMINI_OCR_MODEL", "gemini-3.1-pro")
     env_names = ("GEMINI_API_KEY", "GOOGLE_API_KEY")
 
     def _transcribe(self, key: str, b64: str, mime: str, max_tokens: int) -> _VLM:
@@ -290,7 +301,8 @@ class GeminiOCR(_VisionOCRAdapter):
         finish = cand.get("finishReason")
         return _VLM(text, um.get("promptTokenCount", 0), um.get("candidatesTokenCount", 0),
                     truncated=finish == "MAX_TOKENS",
-                    refused=finish in ("SAFETY", "PROHIBITED_CONTENT", "BLOCKLIST"))
+                    refused=finish in ("SAFETY", "PROHIBITED_CONTENT", "BLOCKLIST"),
+                    served=d.get("modelVersion", ""))
 
 
 # --- native dedicated-OCR adapters ---------------------------------------------
@@ -299,7 +311,7 @@ class MistralOCR(Adapter):
     """Mistral dedicated OCR API (document -> markdown) — native OCR, no prompt."""
 
     vendor = "mistral"
-    model_version = os.environ.get("MISTRAL_OCR_MODEL", "mistral-ocr-latest")
+    model_version = os.environ.get("MISTRAL_OCR_MODEL", "mistral-ocr-2512")
     is_sentinel = False
     mode = "native_ocr"
 
@@ -313,7 +325,7 @@ class MistralOCR(Adapter):
         pages = d.get("pages", [])
         text = "\n\n".join(p.get("markdown", "") for p in pages)
         cost = pricing.page_cost(self.model_version, max(1, len(pages)))
-        return _ok(text, (time.monotonic() - t0) * 1000.0, cost, self.mode)
+        return _ok(text, (time.monotonic() - t0) * 1000.0, cost, self.mode, d.get("model", ""))
 
 
 @register("deepseek-ocr")
@@ -347,4 +359,4 @@ class DeepSeekOCR(Adapter):
         d = _post(base.rstrip("/") + "/chat/completions", body,
                   {"Authorization": f"Bearer {key}"}, timeout=180.0)
         text = d["choices"][0]["message"].get("content") or ""
-        return _ok(text, (time.monotonic() - t0) * 1000.0, 0.0, self.mode)
+        return _ok(text, (time.monotonic() - t0) * 1000.0, 0.0, self.mode, d.get("model", ""))

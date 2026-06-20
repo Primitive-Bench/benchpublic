@@ -21,6 +21,7 @@ Run (downloads ~GB the first time):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -68,6 +69,7 @@ def main() -> None:
 
     rows_out: list[dict] = []
     missing: list[str] = []
+    cat_counts: dict[str, int] = {}
     for stem, doc_type in CATEGORIES.items():  # fixed order
         jf = snap / "bench_data" / f"{stem}.jsonl"
         if not jf.exists():
@@ -97,6 +99,7 @@ def main() -> None:
                 "ground_truth_tier": "verified_external",
                 "canary": CANARY,
             })
+            cat_counts[stem] = cat_counts.get(stem, 0) + 1
 
     out_file = GOLDEN_OCR_DIR / "dev.jsonl"  # git-ignored
     with out_file.open("w", encoding="utf-8") as f:
@@ -105,8 +108,25 @@ def main() -> None:
         for row in rows_out:
             f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
 
+    # Corpus provenance — ties a run's dataset_version to the exact generated split.
+    content_sha = hashlib.sha256(out_file.read_bytes()).hexdigest()[:16]
+    revision = snap.name  # huggingface snapshot dir is named for the commit sha
     pages = len({r["page_image"] for r in rows_out})
+    manifest = {
+        "source": args.repo,
+        "revision": revision,
+        "render_dpi": RENDER_DPI,
+        "per_file": args.per_file,
+        "categories": cat_counts,
+        "total_rows": len(rows_out),
+        "unique_pages": pages,
+        "content_sha256": content_sha,
+        "dataset_version": f"olmocr-bench@{revision[:12]}+{content_sha}",
+    }
+    (GOLDEN_OCR_DIR / "dev.manifest.json").write_text(json.dumps(manifest, indent=2))
+
     print(f"wrote {len(rows_out)} rows ({pages} unique pages) -> {out_file}  (DPI={RENDER_DPI})")
+    print(f"dataset_version: {manifest['dataset_version']}")
     if missing:
         print(f"WARNING: {len(missing)} missing PDFs/files (e.g. {missing[:3]})")
 

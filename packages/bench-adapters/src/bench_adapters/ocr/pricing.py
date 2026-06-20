@@ -12,8 +12,11 @@ TOKEN_PRICES: dict[str, tuple[float, float]] = {
     "claude-sonnet-4-6": (3.00, 15.00),
     "claude-opus-4-8": (5.00, 25.00),
     "gpt-4o": (2.50, 10.00),
+    "gpt-5.5": (5.00, 30.00),
+    "gpt-5.5-2026-04-23": (5.00, 30.00),
     "gemini-2.5-pro": (1.25, 10.00),  # <=200K context tier
     "gemini-3.1-pro": (2.00, 12.00),  # <=200K context tier
+    "gemini-3.1-pro-preview": (2.00, 12.00),
 }
 
 # USD per page for dedicated OCR APIs.

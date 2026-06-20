@@ -12,10 +12,20 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import json
+from pathlib import Path
 
 import bench_core.config  # noqa: F401  — loads .env so adapter API keys are visible
 from eval_ocr.loader import load_rows
 from eval_ocr.runner import DEFAULT_VENDORS, run_sync
+
+
+def _dataset_version(dataset: str) -> str | None:
+    """Use the corpus provenance hash (from a sibling dev.manifest.json) if present."""
+    man = Path(dataset).parent / "dev.manifest.json"
+    if man.exists():
+        return json.loads(man.read_text()).get("dataset_version")
+    return None
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -39,7 +49,8 @@ def main(argv: list[str] | None = None) -> None:
     rows = load_rows(args.dataset)
     vendors = [v.strip() for v in args.vendors.split(",") if v.strip()]
     run_sync(rows, args.run_id, vendors=vendors, seed=args.seed, limit=args.limit,
-             reps=args.reps, out_root=args.out_root, rpm=args.rpm, max_cost_usd=args.max_cost)
+             reps=args.reps, out_root=args.out_root, rpm=args.rpm, max_cost_usd=args.max_cost,
+             dataset_version=_dataset_version(args.dataset))
 
 
 if __name__ == "__main__":

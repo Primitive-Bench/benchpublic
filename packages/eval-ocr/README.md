@@ -47,9 +47,10 @@ model.
 
 ## Adapters (two shapes, one fairness control)
 
-- **Prompted VLMs** — `claude-sonnet-ocr` (official `anthropic` SDK), `gpt-ocr`,
-  `gemini-ocr` — share one **version-pinned transcription prompt** (recorded in the
-  manifest) so prompt phrasing isn't a confound.
+- **Prompted VLMs** — `claude-opus-ocr` (official `anthropic` SDK), `gpt-ocr`
+  (GPT-5.x reasoning model), `gemini-ocr` — share one **version-pinned transcription
+  prompt** (recorded in the manifest) so prompt phrasing isn't a confound. The exact
+  **served model id** each API reports is captured in the manifest (`served:*`).
 - **Native OCR** — `tesseract` (local, free, the regression **sentinel** — expected
   stable and to lose; a `bench_stats.cusum` alarm on its anchor pass-rate flags
   harness drift vs. vendor drift), `mistral-ocr` (dedicated OCR API), `deepseek-ocr`
