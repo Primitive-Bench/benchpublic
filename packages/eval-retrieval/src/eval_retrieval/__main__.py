@@ -46,6 +46,8 @@ def main() -> None:
                     help="comma-separated adapter names (default: all registered)")
     ap.add_argument("--run-id", default="retrieval-dev")
     ap.add_argument("--limit", type=int, default=None, help="cap items (debug)")
+    ap.add_argument("--concurrency", type=int, default=8,
+                    help="in-flight invoke() calls per hosted adapter lane (local lanes ignore it)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out-root", default="runs")
     args = ap.parse_args()
@@ -54,7 +56,7 @@ def main() -> None:
     vendors = (tuple(a.strip() for a in args.adapters.split(",") if a.strip())
                if args.adapters else DEFAULT_VENDORS)
     run_sync(rows, args.run_id, vendors=vendors, seed=args.seed,
-             limit=args.limit, out_root=args.out_root)
+             limit=args.limit, out_root=args.out_root, concurrency=args.concurrency)
 
 
 if __name__ == "__main__":

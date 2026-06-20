@@ -11,6 +11,7 @@ curated `snapshots/retrieval.counts.toml` the leaderboard pipeline consumes.
 from __future__ import annotations
 
 import platform
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from typing import Any, Iterable
@@ -99,6 +100,47 @@ def _manifest(run_id: str, seed: int, specs: list[AdapterSpec], notes: str,
     )
 
 
+def _invoke_lane(
+    name: str, adapter: Any, items: list[dict[str, Any]], concurrency: int,
+) -> list[tuple[dict[str, Any], dict[str, Any]]] | None:
+    """Invoke `adapter` over every item -> ordered [(item, raw), ...], or None if the
+    lane is unavailable (missing key/dep) and should be skipped uncharged.
+
+    We probe the first item synchronously so a `VendorUnavailable` skips the whole
+    lane cleanly. The remaining items run on a thread pool for I/O-bound hosted
+    adapters (`concurrency` in-flight `invoke` calls); local bi-encoders are CPU-bound
+    (torch already uses every core), so they stay sequential. `ThreadPoolExecutor.map`
+    preserves input order, so `items.jsonl` is deterministic regardless of concurrency.
+    """
+    if not items:
+        return []
+    try:
+        first_raw = adapter.invoke(items[0])
+    except VendorUnavailable as exc:
+        print(f"[retrieval] {name} unavailable, skipping lane (uncharged): {exc}")
+        return None
+    except Exception as exc:  # terminal per-item error -> recorded, uncharged
+        first_raw = {"error": repr(exc)[:200]}
+    out: list[tuple[dict[str, Any], dict[str, Any]]] = [(items[0], first_raw)]
+    rest = items[1:]
+    if not rest:
+        return out
+
+    def _one(it: dict[str, Any]) -> dict[str, Any]:
+        try:
+            return adapter.invoke(it)
+        except Exception as exc:  # incl. a mid-lane VendorUnavailable -> uncharged
+            return {"error": repr(exc)[:200]}
+
+    workers = 1 if getattr(adapter, "vendor", "") == "local" else max(1, concurrency)
+    if workers == 1:
+        out.extend((it, _one(it)) for it in rest)
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            out.extend(zip(rest, ex.map(_one, rest)))
+    return out
+
+
 def run_sync(
     rows: Iterable[dict[str, Any]],
     run_id: str,
@@ -109,8 +151,14 @@ def run_sync(
     out_root: str = "runs",
     notes: str = "",
     write_snapshot: bool = True,
+    concurrency: int = 8,
 ) -> list[ItemResult]:
-    """Run the retrieval probe over `rows`; write the run dir; return all ItemResults."""
+    """Run the retrieval probe over `rows`; write the run dir; return all ItemResults.
+
+    `concurrency` is the number of in-flight `invoke` calls per hosted adapter lane
+    (local bi-encoder lanes ignore it and run sequentially). Adapters are still run
+    one lane at a time so per-vendor rate limits aren't compounded across vendors.
+    """
     task = Task(rows)
     items = list(task.items())
     if limit:
@@ -126,21 +174,15 @@ def run_sync(
     for name in names:
         spec = _spec(name)
         adapter = get(name)(spec)
-        lane_used = False
-        for it in items:
-            try:
-                raw = adapter.invoke(it)
-            except VendorUnavailable as exc:
-                print(f"[retrieval] {name} unavailable, skipping lane (uncharged): {exc}")
-                break
-            except Exception as exc:  # terminal per-item error -> recorded, uncharged
-                raw = {"error": repr(exc)[:200]}
+        lane = _invoke_lane(name, adapter, items, concurrency)
+        if lane is None:  # vendor unavailable -> uncharged, no spec recorded
+            continue
+        for it, raw in lane:
             out = scorer.score(it, raw)
             rec = _item_result(run_id, name, it, out, raw)
             rundir.append_item(rec)
             all_records.append(rec)
-            lane_used = True
-        if lane_used:
+        if lane:
             specs.append(spec)
 
     spent = run_cost(all_records)
