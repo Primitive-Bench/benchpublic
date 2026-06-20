@@ -92,7 +92,9 @@ uv run python -m eval_ocr golden-sets-public/ocr/dev.jsonl --run-id run1 --max-c
 ```
 
 Re-running with the same `--run-id` resumes (finished work skipped, never re-paid).
-Outputs land in `runs/<run_id>/{manifest.json, items.jsonl, slices.jsonl}`.
+Outputs land in `runs/<run_id>/{manifest.json, items.jsonl, slices.jsonl,
+transcriptions.jsonl}` — the last holds the **full** per-`(adapter, page)` output so
+scoring can be re-run later (improved scorer, olmocr cross-check) without re-paying.
 
 ## Provenance
 
