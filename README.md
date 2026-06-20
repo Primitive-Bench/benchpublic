@@ -90,10 +90,10 @@ Wilson CIs and a citation. That's "one winner is a lie," embodied: the agent sup
 constraints, the benchmark supplies the statistically honest answer. No server-side LLM, so
 queries are free.
 
-**Add it to Claude Code:**
+**🟢 Live now** at `https://benchpublic.vercel.app/mcp` — add it to Claude Code:
 
 ```bash
-claude mcp add --transport http primitive-bench https://<your-deploy>/mcp
+claude mcp add --transport http primitive-bench https://benchpublic.vercel.app/mcp
 ```
 
 Live for **websearch** and **extraction** today — see [`apps/mcp`](apps/mcp) to run it locally or

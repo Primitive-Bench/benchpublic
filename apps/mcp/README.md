@@ -28,8 +28,10 @@ Live today: **websearch** and **extraction**. The other seven primitives return
 
 ## Endpoints
 
-- Streamable HTTP: `https://<deploy>/mcp`
-- SSE (legacy): `https://<deploy>/sse`
+**🟢 Live:** `https://benchpublic.vercel.app/mcp`
+
+- Streamable HTTP: `https://benchpublic.vercel.app/mcp`
+- SSE (legacy): `https://benchpublic.vercel.app/sse`
 
 ## Local development
 
@@ -60,6 +62,8 @@ Wilson CIs and winner/TIE bands.
 
 ## Deploy to Vercel
 
+> The official instance is already live at `https://benchpublic.vercel.app/mcp`. To deploy your own:
+
 1. Import the repo in Vercel and set **Root Directory = `apps/mcp`** (Next.js auto-detected).
 2. Deploy. Your endpoint is `https://<your-deploy>/mcp`.
 
@@ -70,14 +74,14 @@ is bundled). For high-traffic SSE sessions, add an Upstash Redis URL via `mcp-ha
 
 **Claude Code**
 ```bash
-claude mcp add --transport http primitive-bench https://<your-deploy>/mcp
+claude mcp add --transport http primitive-bench https://benchpublic.vercel.app/mcp
 ```
 
 **Claude Desktop** (`claude_desktop_config.json`)
 ```json
 {
   "mcpServers": {
-    "primitive-bench": { "type": "http", "url": "https://<your-deploy>/mcp" }
+    "primitive-bench": { "type": "http", "url": "https://benchpublic.vercel.app/mcp" }
   }
 }
 ```
