@@ -1,0 +1,586 @@
+{
+  "primitive": "retrieval",
+  "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+  "as_of": "2026-06",
+  "status": "published",
+  "slices": [
+    {
+      "slice": "all",
+      "metric_name": "success_at_10",
+      "n": 1271,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "cohere-embed",
+        "openai-embed"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "all",
+          "adapter": "cohere-embed",
+          "n": 1271,
+          "point_estimate": 0.8961447678992919,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8961447678992919,
+            "p_value": null,
+            "ci_low": 0.8781617586626926,
+            "ci_high": 0.9117402966200969,
+            "n": 1271,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "all",
+          "adapter": "openai-embed",
+          "n": 1268,
+          "point_estimate": 0.88801261829653,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.88801261829653,
+            "p_value": null,
+            "ci_low": 0.8694696430230092,
+            "ci_high": 0.904211607849741,
+            "n": 1268,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "all",
+          "adapter": "bge-small",
+          "n": 1271,
+          "point_estimate": 0.8072383949645948,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8072383949645948,
+            "p_value": null,
+            "ci_low": 0.7846387317510002,
+            "ci_high": 0.8279863975199617,
+            "n": 1271,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "all",
+          "adapter": "e5-small",
+          "n": 1271,
+          "point_estimate": 0.7977970102281668,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.7977970102281668,
+            "p_value": null,
+            "ci_low": 0.7748334394493921,
+            "ci_high": 0.8189658215725264,
+            "n": 1271,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "slice": "domain:financial",
+      "metric_name": "success_at_10",
+      "n": 648,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "cohere-embed",
+        "openai-embed"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:financial",
+          "adapter": "cohere-embed",
+          "n": 648,
+          "point_estimate": 0.8842592592592593,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8842592592592593,
+            "p_value": null,
+            "ci_low": 0.8573310430144565,
+            "ci_high": 0.9066582451807126,
+            "n": 648,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:financial",
+          "adapter": "openai-embed",
+          "n": 647,
+          "point_estimate": 0.8717156105100463,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8717156105100463,
+            "p_value": null,
+            "ci_low": 0.8437363457482216,
+            "ci_high": 0.8953067639730992,
+            "n": 647,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:financial",
+          "adapter": "e5-small",
+          "n": 648,
+          "point_estimate": 0.7746913580246914,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.7746913580246914,
+            "p_value": null,
+            "ci_low": 0.7409587396463396,
+            "ci_high": 0.8051862133606486,
+            "n": 648,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:financial",
+          "adapter": "bge-small",
+          "n": 648,
+          "point_estimate": 0.7592592592592593,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.7592592592592593,
+            "p_value": null,
+            "ci_low": 0.7248745482752524,
+            "ci_high": 0.7905881040010062,
+            "n": 648,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "slice": "domain:medical",
+      "metric_name": "success_at_10",
+      "n": 323,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "openai-embed",
+        "cohere-embed",
+        "bge-small"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:medical",
+          "adapter": "openai-embed",
+          "n": 321,
+          "point_estimate": 0.8878504672897196,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8878504672897196,
+            "p_value": null,
+            "ci_low": 0.8486431476481778,
+            "ci_high": 0.9178842921871143,
+            "n": 321,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:medical",
+          "adapter": "cohere-embed",
+          "n": 323,
+          "point_estimate": 0.8854489164086687,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8854489164086687,
+            "p_value": null,
+            "ci_low": 0.8460947186301843,
+            "ci_high": 0.9157422078810064,
+            "n": 323,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:medical",
+          "adapter": "bge-small",
+          "n": 323,
+          "point_estimate": 0.8328173374613003,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8328173374613003,
+            "p_value": null,
+            "ci_low": 0.7882631368261221,
+            "ci_high": 0.8695478639767131,
+            "n": 323,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:medical",
+          "adapter": "e5-small",
+          "n": 323,
+          "point_estimate": 0.8080495356037152,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8080495356037152,
+            "p_value": null,
+            "ci_low": 0.7615782127360607,
+            "ci_high": 0.8472794112628427,
+            "n": 323,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "slice": "domain:scientific",
+      "metric_name": "success_at_10",
+      "n": 300,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "cohere-embed",
+        "openai-embed",
+        "bge-small"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:scientific",
+          "adapter": "cohere-embed",
+          "n": 300,
+          "point_estimate": 0.9333333333333333,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.9333333333333333,
+            "p_value": null,
+            "ci_low": 0.8992762041322797,
+            "ci_high": 0.9564328232030161,
+            "n": 300,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:scientific",
+          "adapter": "openai-embed",
+          "n": 300,
+          "point_estimate": 0.9233333333333333,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.9233333333333333,
+            "p_value": null,
+            "ci_low": 0.8875891334382622,
+            "ci_high": 0.9483727624969882,
+            "n": 300,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:scientific",
+          "adapter": "bge-small",
+          "n": 300,
+          "point_estimate": 0.8833333333333333,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8833333333333333,
+            "p_value": null,
+            "ci_low": 0.8420660083343473,
+            "ci_high": 0.9149073620007219,
+            "n": 300,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "domain:scientific",
+          "adapter": "e5-small",
+          "n": 300,
+          "point_estimate": 0.8366666666666667,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8366666666666667,
+            "p_value": null,
+            "ci_low": 0.7906259121631731,
+            "ci_high": 0.8741941783050182,
+            "n": 300,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "slice": "relevant_set:multi",
+      "metric_name": "success_at_10",
+      "n": 751,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "cohere-embed",
+        "openai-embed"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:multi",
+          "adapter": "cohere-embed",
+          "n": 751,
+          "point_estimate": 0.9320905459387483,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.9320905459387483,
+            "p_value": null,
+            "ci_low": 0.9118090459552863,
+            "ci_high": 0.9479739866703665,
+            "n": 751,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:multi",
+          "adapter": "openai-embed",
+          "n": 748,
+          "point_estimate": 0.9278074866310161,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.9278074866310161,
+            "p_value": null,
+            "ci_low": 0.9069930344048238,
+            "ci_high": 0.944250099787272,
+            "n": 748,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:multi",
+          "adapter": "bge-small",
+          "n": 751,
+          "point_estimate": 0.8521970705725699,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8521970705725699,
+            "p_value": null,
+            "ci_low": 0.8250226724211774,
+            "ci_high": 0.8757866099501174,
+            "n": 751,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:multi",
+          "adapter": "e5-small",
+          "n": 751,
+          "point_estimate": 0.8521970705725699,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8521970705725699,
+            "p_value": null,
+            "ci_low": 0.8250226724211774,
+            "ci_high": 0.8757866099501174,
+            "n": 751,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    },
+    {
+      "slice": "relevant_set:single",
+      "metric_name": "success_at_10",
+      "n": 520,
+      "status": "published",
+      "winner": null,
+      "band": [
+        "cohere-embed",
+        "openai-embed"
+      ],
+      "thin": false,
+      "saturated": false,
+      "citation": "packages/eval-retrieval/README.md",
+      "results": [
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:single",
+          "adapter": "cohere-embed",
+          "n": 520,
+          "point_estimate": 0.8442307692307692,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8442307692307692,
+            "p_value": null,
+            "ci_low": 0.8105492004262114,
+            "ci_high": 0.8728634953199836,
+            "n": 520,
+            "seed": null
+          },
+          "separable": false,
+          "rank": 1
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:single",
+          "adapter": "openai-embed",
+          "n": 520,
+          "point_estimate": 0.8307692307692308,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.8307692307692308,
+            "p_value": null,
+            "ci_low": 0.7961423586856825,
+            "ci_high": 0.8605447009140134,
+            "n": 520,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 2
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:single",
+          "adapter": "bge-small",
+          "n": 520,
+          "point_estimate": 0.7423076923076923,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.7423076923076923,
+            "p_value": null,
+            "ci_low": 0.7030345457681608,
+            "ci_high": 0.7780269048688258,
+            "n": 520,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 3
+        },
+        {
+          "run_id": "retrieval-2026.06.scifact+nfcorpus+fiqa.n1271.seed0",
+          "primitive": "retrieval",
+          "slice": "relevant_set:single",
+          "adapter": "e5-small",
+          "n": 520,
+          "point_estimate": 0.7192307692307692,
+          "metric_name": "success_at_10",
+          "ci": {
+            "method": "wilson",
+            "statistic": 0.7192307692307692,
+            "p_value": null,
+            "ci_low": 0.6791068183938079,
+            "ci_high": 0.7561392559920369,
+            "n": 520,
+            "seed": null
+          },
+          "separable": null,
+          "rank": 4
+        }
+      ]
+    }
+  ]
+}

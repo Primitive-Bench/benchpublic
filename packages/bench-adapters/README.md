@@ -84,3 +84,27 @@ price even inside a vendor's free tier.
 
 `bge-reranker` is **opt-in** — its weights are ~2.3 GB and slow on CPU, so it is not in
 `eval-reranker`'s default vendor set (nor the published board); pass it explicitly to include it.
+
+## Registered RETRIEVAL adapters (query + candidate pool -> ranked ids)
+
+`invoke(item)` reads `item["query"]` and `item["candidates"]` (a list of
+`{"id", "text"}` — a BM25 per-query pool). Returns `retrieved_ids: list[str]`
+(candidate ids, best first), ranked by **bi-encoder** cosine similarity (embed query
+and documents separately). Like rerank this is restricted to a fixed pool — the
+contrast with the vectordb primitive, which owns corpus indexing — but the model class
+is a bi-encoder rather than a cross-encoder.
+
+The two local bi-encoders are keyless (free, run on CPU) and need the
+`local-retrieval` extra (`sentence-transformers`); install with
+`uv sync --extra local-retrieval` or via `eval-retrieval`, which depends on it. The
+hosted APIs read a bare `<VENDOR>_API_KEY`. `cost_usd` records the call's list price
+even inside a vendor's free tier.
+
+| name | vendor | model | env var / requirement |
+|------|--------|-------|-----------------------|
+| `bge-small` | local (sentinel) | `BAAI/bge-small-en-v1.5` | none — `local-retrieval` extra |
+| `e5-small` | local | `intfloat/e5-small-v2` | none — `local-retrieval` extra |
+| `openai-embed` | OpenAI | `text-embedding-3-large` | `OPENAI_API_KEY` |
+| `openai-embed-small` | OpenAI | `text-embedding-3-small` | `OPENAI_API_KEY` |
+| `voyage-embed` | Voyage | `voyage-4-large` | `VOYAGE_API_KEY` (first 200M tok free) |
+| `cohere-embed` | Cohere | `embed-v4.0` | `COHERE_API_KEY` (pay-as-you-go) |

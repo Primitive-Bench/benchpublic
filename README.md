@@ -48,7 +48,7 @@ live here — they sit behind the private eval server, so the scores stay honest
 | OCR | `eval-ocr` | text fidelity across document types | 🚧 Planned |
 | Vector DBs | `eval-vectordb` | recall / latency / cost across index configs | 🚧 Planned |
 | Rerankers | `eval-reranker` | nDCG@10 / MAP / MRR + hit@1, sliced by domain & hard-negative density | ✅ Live |
-| Retrieval | `eval-retrieval` | nDCG@k, MAP@k, MRR@k, Recall@k | 🚧 Planned |
+| Retrieval | `eval-retrieval` | nDCG@10 / recall@10 / MAP / MRR + success@10, sliced by domain & relevant-set | ✅ Live |
 | Chunking | `eval-chunking` | downstream retrieval quality by chunk strategy | 🚧 Planned |
 | Crawling | `eval-crawl` | coverage & freshness of fetched content | 🚧 Planned |
 | Memory | — | long-horizon recall (LoCoMo-style) | 🗺️ Roadmap |
@@ -96,8 +96,8 @@ queries are free.
 claude mcp add --transport http primitive-bench https://benchpublic.vercel.app/mcp
 ```
 
-Live for **websearch**, **extraction**, and **reranker** today — see [`apps/mcp`](apps/mcp) to run it locally or
-deploy your own.
+Live for **websearch**, **extraction**, **reranker**, and **retrieval** today — see [`apps/mcp`](apps/mcp) to run it
+locally or deploy your own.
 
 ## How it works
 
